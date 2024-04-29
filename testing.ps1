@@ -1,5 +1,5 @@
 param (
-    [Parameter(Mandatory=$true)][string]$playbook_url
+    [Parameter(Mandatory=$false)][string]$playbook_url
 ) 
 
 $tempPath = [System.IO.Path]::GetTempPath()
