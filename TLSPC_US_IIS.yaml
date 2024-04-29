@@ -11,7 +11,7 @@ certificateTasks:
       csr: service
       subject:
         commonName: '{{ Hostname | ToLower -}}.mimdemo.com'
-      zone: 'IIS pull\\ztAllowAll'
+      zone: 'IIS pull\ztAllowAll'
     installations:
       - format: CAPI
         capiLocation: 'LocalMachine\MY'
