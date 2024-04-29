@@ -1,0 +1,20 @@
+config:
+  connection:
+    platform: vAaS #cloudplatform
+    credentials:
+      apiKey: '{{ Env "TLSCP_APIKEY" }}'
+certificateTasks:
+  - name: IIS # Task Identifier, no relevance in tool run
+    renewBefore: 20%
+    setEnvVars: ["thumbprint"]
+    request:
+      csr: service
+      subject:
+        commonName: '{{ Hostname | ToLower -}}.mimdemo.com'
+      zone: 'IIS pull\\ztAllowAll'
+    installations:
+      - format: CAPI
+        capiLocation: 'LocalMachine\MY'
+        capiFriendlyName: 'vCert Playbook - TLS PC - IIS'
+        capiIsNonExportable: True
+        afterInstallAction: Import-Module Webadministration; Get-WebBinding vcert_website | where {($_.protocol -eq "https")} | % {$_.addsslcertificate($Env:VCERT_IIS_THUMBPRINT, "My")}
