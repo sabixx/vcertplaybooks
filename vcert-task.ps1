@@ -81,11 +81,11 @@ $playBookPath = Join-Path -Path $tempPath -ChildPath $playbook_url.Split('/')[-1
 
 Log-Message "Env:TLSPC_APIKEY = $Env:TLSPC_APIKEY"
 Log-Message "Env:TLSPC_Hostname = $Env:TLSPC_Hostname"
-Log-Message "Env:playbook_url = $Env:playbook_url"
+Log-Message "playbook_url = $playbook_url"
 Log-Message "playbook path = $playBookPath"
 Log-Message "tempPath = $tempPath"
-Log-Message "playbook path = $playBookPath"
-Log-Message "playbook path = $playBookPath"
+#Log-Message "playbook path = $playBookPath"
+#og-Message "playbook path = $playBookPath"
 
 # Download the Playbook
 Invoke-WebRequest -Uri $playbook_url -OutFile $playBookPath
