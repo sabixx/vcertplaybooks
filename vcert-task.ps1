@@ -32,13 +32,13 @@ Log-Message "==== Start ===="
  # Check if the script is running with admin privileges
  if (-not ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")) {
     Log-Message "This script requires administrator privileges. Please run it with administrator privileges."
-    Read-Host -Prompt "Press Enter to exit"
     exit
 }
 
 # check is playbook_url was provided
 if (-not $playbook_url) {
     Log-Message "no playbook_url provided, existing."
+    exit
 } else {
     Log-Message "using playbook_url = $playbook_url"
 }
@@ -55,7 +55,6 @@ if (-not [Environment]::GetEnvironmentVariable("TLSPC_Hostname", "Machine")) {
 if (-not [Environment]::GetEnvironmentVariable("TLSPC_APIKEY", "Machine")) {
     [Environment]::SetEnvironmentVariable("TLSPC_APIKEY", [System.Net.Dns]::GetHostName(), "Machine")
     Log-Message "no TLSPC_APIKEY set, exiting."
-    Read-Host -Prompt "Press Enter to exit."
     exit
 } else {
     Log-Message "retrieved TLSPC_APIKEY."
