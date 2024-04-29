@@ -10,7 +10,7 @@ certificateTasks:
     request:
       csr: service
       subject:
-        commonName: '{{ Env "TLSCP_Hostname"}}.venafidemo.com'
+        commonName: '{{ Env "TLSCP_Hostname" }}.venafidemo.com'
       sanDNS: 
         - '{{ Env "TLSCP_Hostname"}}.venafidemo.com'
       zone: "vcert prod\\rdp"

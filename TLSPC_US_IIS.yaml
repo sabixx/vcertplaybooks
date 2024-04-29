@@ -10,7 +10,7 @@ certificateTasks:
     request:
       csr: service
       subject:
-        commonName: '{{ Hostname | ToLower -}}.mimdemo.com'
+        commonName: '{{ Env "TLSCP_Hostname" }}.mimdemo.com'
       zone: 'IIS pull\ztAllowAll'
     installations:
       - format: CAPI
