@@ -1,7 +1,7 @@
  # Running vcert as sheduled taks, downloads latest vcert
 # downloads and runs a playbook 
 # 
-# Env variables requiered accoring to the playbook e.g. "TLSCP_APIKEY" 
+# Env variables required according to the playbook e.g. "TLSCP_APIKEY" 
 # # TLSCP_Hostname
 #
 # $Env:TLSCP_Hostname = 'testing'
