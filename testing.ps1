@@ -21,6 +21,10 @@ function Log-Message {
 Write-Host "==== Start ===="
 Log-Message "==== Start ===="
 
+Write-Host "$logFilePath"
+Log-Message "$logFilePath"
+
+
 
 # check is playbook_url was provided
 if (-not $playbook_url) {
