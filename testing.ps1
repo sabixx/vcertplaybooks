@@ -4,7 +4,7 @@ param (
 
 $tempPath = [System.IO.Path]::GetTempPath()
 
-$logFilePath = Join-Path -Path  "$tempPath" "vcert_testing_log.txt"
+$logFilePath = Join-Path -Path  "c:\temp" "vcert_testing_log.txt"
 
 # Function to append log messages with timestamps
 
