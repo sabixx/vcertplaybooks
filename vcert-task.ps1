@@ -63,8 +63,6 @@ if (-not [Environment]::GetEnvironmentVariable("TLSPC_APIKEY", "Machine")) {
 
 $playBookPath = Join-Path -Path $tempPath -ChildPath $playbook_url.Split('/')[-1]
 
-Log-Message "Env:TLSPC_APIKEY = $Env:TLSPC_APIKEY"
-Log-Message "Env:TLSPC_Hostname = $Env:TLSPC_Hostname"
 Log-Message "playbook_url = $playbook_url"
 Log-Message "playbook path = $playBookPath"
 Log-Message "tempPath = $tempPath"
