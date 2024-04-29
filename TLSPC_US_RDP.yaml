@@ -2,9 +2,9 @@ config:
   connection:
     platform: vAaS #cloudplatform
     credentials:
-      apiKey: '{{ Env "TLSCP_APIKEY" }}'
+      apiKey: '{{ Env "TLSPC_APIKEY" }}'
 certificateTasks:
-  - name: myCertificate # Task Identifier, no relevance in tool run
+  - name: RDP # Task Identifier, no relevance in tool run
     renewBefore: 20%
     setEnvVars: ["thumbprint"]
     request:
@@ -19,4 +19,4 @@ certificateTasks:
         capiLocation: 'LocalMachine\MY'
         capiFriendlyName: 'vCert Playbook - TLS PC - RDP'
         capiIsNonExportable: True
-        afterInstallAction: $path = (Get-WmiObject -class "Win32_TSGeneralSetting" -Namespace root\cimv2\terminalservices -Filter "TerminalName='RDP-tcp'").__path; $result=Set-WmiInstance -Path $path -argument @{SSLCertificateSHA1Hash="$Env:VCERT_MYCERTIFICATE_THUMBPRINT"}
+        afterInstallAction: $path = (Get-WmiObject -class "Win32_TSGeneralSetting" -Namespace root\cimv2\terminalservices -Filter "TerminalName='RDP-tcp'").__path; $result=Set-WmiInstance -Path $path -argument @{SSLCertificateSHA1Hash="$Env:VCERT_RDP_THUMBPRINT"}

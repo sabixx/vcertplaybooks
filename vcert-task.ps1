@@ -1,4 +1,4 @@
- # Running vcert as sheduled taks, downloads latest vcert
+# Running vcert as sheduled taks, downloads latest vcert
 # downloads and runs a playbook 
 # 
 # Env variables required according to the playbook e.g. "TLSCP_APIKEY" 
@@ -61,22 +61,6 @@ if (-not [Environment]::GetEnvironmentVariable("TLSPC_APIKEY", "Machine")) {
     $Env:TLSPC_APIKEY = [System.Environment]::GetEnvironmentVariable('TLSPC_APIKEY','Machine')
 }
 
-<#
-    if (-not [Environment]::GetEnvironmentVariable("TLSPC_PlaybookUrl", "Machine")) {
-        [Environment]::SetEnvironmentVariable("TLSPC_PlaybookUrl", [System.Net.Dns]::GetHostName(), "Machine")
-        Log-Message "no TLSPC_PlaybookUrl set, exiting."
-        Read-Host -Prompt "Press Enter to exit."
-        exit
-    } else {
-        Log-Message "retrieved TLSPC_PlaybookUrl"
-        $Env:
-#>
-
-#[Environment]::SetEnvironmentVariable("TLSPC_APIKEY", [Environment]::GetEnvironmentVariable('TLSPC_APIKEY','Machine'), [System.EnvironmentVariableTarget]::Process)
-#[Environment]::SetEnvironmentVariable("TLSPC_PlaybookUrl", [Environment]::GetEnvironmentVariable('TLSPC_PlaybookUrl','Machine'), [System.EnvironmentVariableTarget]::Process)
-
-#$playbook_url = $Env:TLSPC_PlaybookUrl
-
 $playBookPath = Join-Path -Path $tempPath -ChildPath $playbook_url.Split('/')[-1]
 
 Log-Message "Env:TLSPC_APIKEY = $Env:TLSPC_APIKEY"
@@ -84,8 +68,6 @@ Log-Message "Env:TLSPC_Hostname = $Env:TLSPC_Hostname"
 Log-Message "playbook_url = $playbook_url"
 Log-Message "playbook path = $playBookPath"
 Log-Message "tempPath = $tempPath"
-#Log-Message "playbook path = $playBookPath"
-#og-Message "playbook path = $playBookPath"
 
 # Download the Playbook
 Invoke-WebRequest -Uri $playbook_url -OutFile $playBookPath

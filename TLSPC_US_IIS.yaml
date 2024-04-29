@@ -2,7 +2,7 @@ config:
   connection:
     platform: vAaS #cloudplatform
     credentials:
-      apiKey: '{{ Env "TLSCP_APIKEY" }}'
+      apiKey: '{{ Env "TLSPC_APIKEY" }}'
 certificateTasks:
   - name: IIS # Task Identifier, no relevance in tool run
     renewBefore: 20%
