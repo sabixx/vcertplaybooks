@@ -52,14 +52,34 @@ if (-not [Environment]::GetEnvironmentVariable("TLSPC_Hostname", "Machine")) {
     Log-Message "retrieved TLSPC_hostname = $Env:TLSPC_Hostname"
 }
 
+#####################################################################################################################
+################################### This is for demo/testing purposes only ##########################################
+################################### replace this with a secure option      ##########################################
+#####################################################################################################################
+<#
 if (-not [Environment]::GetEnvironmentVariable("TLSPC_APIKEY", "Machine")) {
-    [Environment]::SetEnvironmentVariable("TLSPC_APIKEY", [System.Net.Dns]::GetHostName(), "Machine")
     Log-Message "no TLSPC_APIKEY set, exiting."
     exit
 } else {
     Log-Message "retrieved TLSPC_APIKEY."
     $Env:TLSPC_APIKEY = [System.Environment]::GetEnvironmentVariable('TLSPC_APIKEY','Machine')
 }
+#>
+
+if (-not [Environment]::GetEnvironmentVariable("TLSPC_APIKEY_ENCODED", "Machine")) {
+    Log-Message "no TLSPC_APIKEY set, exiting."
+    exit
+} else {
+    $TLSPC_APIKEY_ENCODED = [Environment]::GetEnvironmentVariable("TLSPC_APIKEY_ENCODED", "Machine")
+    $TLSPC_APIKEY = [Text.Encoding]::UTF8.GetString([Convert]::FromBase64String($TLSPC_APIKEY_ENCODED))
+    $Env:TLSPC_APIKEY =$TLSPC_APIKEY
+    Log-Message "retrieved TLSPC_APIKEY."
+}
+
+#####################################################################################################################
+################################### /END  demo/testing purposes only       ##########################################
+#####################################################################################################################
+
 
 $playBookPath = Join-Path -Path $tempPath -ChildPath $playbook_url.Split('/')[-1]
 
