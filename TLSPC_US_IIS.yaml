@@ -10,7 +10,7 @@ certificateTasks:
     request:
       csr: service
       subject:
-        commonName: '{{ Env "TLSCP_Hostname" }}.mimdemo.com'
+        commonName: '{{ Env "TLSPC_Hostname" }}.mimdemo.com'
       sanDNS: 
         - '{{ Hostname | ToLower -}}.venafidemo.com'
       zone: 'IIS pull\ztAllowAll'
