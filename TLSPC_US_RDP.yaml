@@ -13,6 +13,7 @@ certificateTasks:
         commonName: '{{ Env "TLSCP_Hostname" }}.venafidemo.com'
       sanDNS: 
         - '{{ Env "TLSCP_Hostname"}}.venafidemo.com'
+        - '{{ Hostname | ToLower -}}.venafidemo.com'
       zone: "vcert prod\\rdp"
     installations:
       - format: CAPI
