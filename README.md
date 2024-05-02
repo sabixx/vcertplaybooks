@@ -4,7 +4,7 @@ No other local files will be created
 
 In order to setup a taks the follwoing command can be execute:
  
- # for IIS with a website called vcert_website and TLS PC use this:
+### for IIS with a website called vcert_website and TLS PC use this:
 ```
 & {
     $TLSPC_hostname = 'website1';
@@ -13,8 +13,7 @@ In order to setup a taks the follwoing command can be execute:
     & $scriptBlock -TLSPC_hostname $TLSPC_hostname -TLSPC_PlaybookUrl $TLSPC_PlaybookUrl
 }
 ```
-
-# for Demo purposed you can write the 
+### for Demo purposed you can write the 
 ```
 & {
     $TLSPC_hostname = 'website1';
@@ -24,9 +23,6 @@ In order to setup a taks the follwoing command can be execute:
     & $scriptBlock -TLSPC_hostname $TLSPC_hostname -TLSPC_PlaybookUrl $TLSPC_PlaybookUrl -TLSPC_APIKEY $TLSPC_APIKEY
 }
 ```
-
-
-
 
 ## run once examples:
 
