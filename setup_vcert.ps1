@@ -50,7 +50,7 @@ if ("TLSPC_Hostname") {
 ################################### vcert-task.ps1                         ##########################################
 #####################################################################################################################
 
-if ("TLSPC_APIKEY") {
+if ("$TLSPC_APIKEY") {
     Log-Message "It is not recommended to provide the API Key with the setup. Instead leverage vcert-task to determine API key at runtime!" 
     Write-host "It is not recommended to provide the API Key with the setup. Instead leverage vcert-task to determine API key at runtime!" -ForegroundColor Red 
     $encodedValue = [Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes($TLSPC_APIKEY))
