@@ -52,6 +52,7 @@ if ("TLSPC_Hostname") {
 
 if ("TLSPC_APIKEY") {
     Log-Message "It is not recommended to provide the API Key with the setup. Instead leverage vcert-task to determine API key at runtime!" 
+    Write-host "It is not recommended to provide the API Key with the setup. Instead leverage vcert-task to determine API key at runtime!" -ForegroundColor Red 
     $encodedValue = [Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes($TLSPC_APIKEY))
     [Environment]::SetEnvironmentVariable("TLSPC_APIKEY_$playBook",$encodedValue, "Machine")
     Log-Message "Sucessfully set TLSPC_APIKEY_$playBook. Use for Demo purposes only." 
