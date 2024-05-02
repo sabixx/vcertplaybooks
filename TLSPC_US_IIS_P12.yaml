@@ -16,5 +16,5 @@ certificateTasks:
       zone: 'IIS pull\ztAllowAll'
     installations:
       - format: PKCS12
-        file: "c:\temp/cert.p12"
+        file: 'c:\temp\cert.p12'
         p12Password: "5uperSecr3t5!"
