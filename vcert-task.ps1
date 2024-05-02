@@ -2,11 +2,12 @@
 # downloads and runs a playbook 
 # 
 # Env variables required according to the playbook e.g. "TLSPC_APIKEY" 
-# # TLSPC_Hostname
+# 
 #
-# $Env:TLSPC_Hostname = 'testing'
-# $Env:TLSPC_APIKEY = 'xxx'
-# $Env:TPP_ACCESS_TOKEN= 'xxx'
+#
+#
+#
+
 
 param (
     [Parameter(Mandatory=$true)][string]$playbook_url
@@ -61,7 +62,7 @@ if (-not [Environment]::GetEnvironmentVariable("TLSPC_Hostname_$playBook", "Mach
 
 if (-not [Environment]::GetEnvironmentVariable("TLSPC_APIKEY_$playBook", "Machine")) {
     Log-Message "no TLSPC_APIKEY set, exiting."
-    exit
+    #exit
 } else {
     $TLSPC_APIKEY_ENCODED = [Environment]::GetEnvironmentVariable("TLSPC_APIKEY_$playBook", "Machine")
     $TLSPC_APIKEY = [Text.Encoding]::UTF8.GetString([Convert]::FromBase64String($TLSPC_APIKEY_ENCODED))
