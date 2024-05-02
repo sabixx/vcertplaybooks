@@ -61,7 +61,7 @@ if (-not [Environment]::GetEnvironmentVariable("TLSPC_Hostname_$playBook", "Mach
 #####################################################################################################################
 
 if (-not [Environment]::GetEnvironmentVariable("TLSPC_APIKEY_$playBook", "Machine")) {
-    Log-Message "no TLSPC_APIKEY set, exiting."
+    Log-Message "no TLSPC_APIKEY set."
     #exit
 } else {
     $TLSPC_APIKEY_ENCODED = [Environment]::GetEnvironmentVariable("TLSPC_APIKEY_$playBook", "Machine")
