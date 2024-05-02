@@ -14,6 +14,8 @@ param (
 
 $tempPath = [System.IO.Path]::GetTempPath()
 
+$playBook = $playbook_url.Split('/')[-1]
+
 $logFilePathDownload = Join-Path -Path  "$tempPath" "vcert_download_log.txt"
 $logFilePathRun = Join-Path -Path  "$tempPath" "vcert_run_log.txt"
 
@@ -44,11 +46,11 @@ if (-not $playbook_url) {
 }
 
 # Set $TLSPC_Hostname as an environment variable for the current process only
-if (-not [Environment]::GetEnvironmentVariable("TLSPC_Hostname", "Machine")) {
+if (-not [Environment]::GetEnvironmentVariable("TLSPC_Hostname_$playBook", "Machine")) {
     Log-Message "no TLSPC_hostname set, using ::GetHostName."
-    [Environment]::SetEnvironmentVariable("TLSPC_Hostname", [System.Net.Dns]::GetHostName(), "Machine")
+    [Environment]::SetEnvironmentVariable("TLSPC_Hostname_$playBook", [System.Net.Dns]::GetHostName(), "Machine")
 } else {
-    $Env:TLSPC_Hostname = [System.Environment]::GetEnvironmentVariable('TLSPC_Hostname','Machine')
+    $Env:TLSPC_Hostname = [System.Environment]::GetEnvironmentVariable("TLSPC_Hostname_$playBook",'Machine')
     Log-Message "retrieved TLSPC_hostname = $Env:TLSPC_Hostname"
 }
 
@@ -57,11 +59,11 @@ if (-not [Environment]::GetEnvironmentVariable("TLSPC_Hostname", "Machine")) {
 ################################### replace this with a secure option      ##########################################
 #####################################################################################################################
 
-if (-not [Environment]::GetEnvironmentVariable("TLSPC_APIKEY_ENCODED", "Machine")) {
+if (-not [Environment]::GetEnvironmentVariable("TLSPC_APIKEY_$playBook", "Machine")) {
     Log-Message "no TLSPC_APIKEY set, exiting."
     exit
 } else {
-    $TLSPC_APIKEY_ENCODED = [Environment]::GetEnvironmentVariable("TLSPC_APIKEY_ENCODED", "Machine")
+    $TLSPC_APIKEY_ENCODED = [Environment]::GetEnvironmentVariable("TLSPC_APIKEY_$playBook", "Machine")
     $TLSPC_APIKEY = [Text.Encoding]::UTF8.GetString([Convert]::FromBase64String($TLSPC_APIKEY_ENCODED))
     $Env:TLSPC_APIKEY =$TLSPC_APIKEY
     Log-Message "retrieved TLSPC_APIKEY."

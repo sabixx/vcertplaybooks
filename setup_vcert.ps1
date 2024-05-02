@@ -39,8 +39,8 @@ Log-Message "TLSPC_APIKEY      = 1234-xxxx"
 
 # Creating the temporary environment variables in the process
 if ("TLSPC_Hostname") {
-     [Environment]::SetEnvironmentVariable("TLSPC_Hostname",$TLSPC_Hostname, "Machine")
-     Log-Message "Sucessfully set TLSPC_Hostname" 
+     [Environment]::SetEnvironmentVariable("TLSPC_Hostname_$playBook",$TLSPC_Hostname, "Machine")
+     Log-Message "Sucessfully set TLSPC_Hostname_$playBook" 
 }
 
 #####################################################################################################################
@@ -52,15 +52,18 @@ if ("TLSPC_Hostname") {
 
 if ("TLSPC_APIKEY") {
     $encodedValue = [Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes($TLSPC_APIKEY))
-    [Environment]::SetEnvironmentVariable("TLSPC_APIKEY_ENCODED",$encodedValue, "Machine")
-    Log-Message "Sucessfully set TLSPC_APIKEY. Use for Demo purposes only." 
+    [Environment]::SetEnvironmentVariable("TLSPC_APIKEY_$playBook",$encodedValue, "Machine")
+    Log-Message "Sucessfully set TLSPC_APIKEY_$playBook. Use for Demo purposes only." 
 } else{
-   Log-Message "TLSPC_APIKEY to be determined during runtime." 
+   Log-Message "TLSPC_APIKEY determined during runtime." 
 }
 
 #####################################################################################################################
 ################################### /END  demo/testing purposes only       ##########################################
 #####################################################################################################################
+
+# Generate a random hour and minute for the task to run
+$randomHour = Get-Random -Minimum 8 -Maximum 10
 
 # Generate a random hour and minute for the task to run
 $randomMinute = Get-Random -Minimum 0 -Maximum 59
