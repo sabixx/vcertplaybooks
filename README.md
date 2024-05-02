@@ -13,7 +13,7 @@ In order to setup a taks the follwoing command can be execute:
     & $scriptBlock -TLSPC_hostname $TLSPC_hostname -TLSPC_PlaybookUrl $TLSPC_PlaybookUrl
 }
 ```
-### for Demo purposed you can write the 
+### for Demo purposed, with API Key 
 ```
 & {
     $TLSPC_hostname = 'website1';
