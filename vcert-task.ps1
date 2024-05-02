@@ -1,11 +1,11 @@
 # Running vcert as sheduled taks, downloads latest vcert
 # downloads and runs a playbook 
 # 
-# Env variables required according to the playbook e.g. "TLSCP_APIKEY" 
-# # TLSCP_Hostname
+# Env variables required according to the playbook e.g. "TLSPC_APIKEY" 
+# # TLSPC_Hostname
 #
-# $Env:TLSCP_Hostname = 'testing'
-# $Env:TLSCP_APIKEY = 'xxx'
+# $Env:TLSPC_Hostname = 'testing'
+# $Env:TLSPC_APIKEY = 'xxx'
 # $Env:TPP_ACCESS_TOKEN= 'xxx'
 
 param (
@@ -56,15 +56,6 @@ if (-not [Environment]::GetEnvironmentVariable("TLSPC_Hostname", "Machine")) {
 ################################### This is for demo/testing purposes only ##########################################
 ################################### replace this with a secure option      ##########################################
 #####################################################################################################################
-<#
-if (-not [Environment]::GetEnvironmentVariable("TLSPC_APIKEY", "Machine")) {
-    Log-Message "no TLSPC_APIKEY set, exiting."
-    exit
-} else {
-    Log-Message "retrieved TLSPC_APIKEY."
-    $Env:TLSPC_APIKEY = [System.Environment]::GetEnvironmentVariable('TLSPC_APIKEY','Machine')
-}
-#>
 
 if (-not [Environment]::GetEnvironmentVariable("TLSPC_APIKEY_ENCODED", "Machine")) {
     Log-Message "no TLSPC_APIKEY set, exiting."
@@ -79,7 +70,6 @@ if (-not [Environment]::GetEnvironmentVariable("TLSPC_APIKEY_ENCODED", "Machine"
 #####################################################################################################################
 ################################### /END  demo/testing purposes only       ##########################################
 #####################################################################################################################
-
 
 $playBookPath = Join-Path -Path $tempPath -ChildPath $playbook_url.Split('/')[-1]
 

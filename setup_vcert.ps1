@@ -1,7 +1,7 @@
 param (
     [Parameter(Mandatory=$false)][string]$TLSPC_Hostname,
     [Parameter(Mandatory=$true)][string]$TLSPC_PlaybookUrl, 
-    [Parameter(Mandatory=$true)][string]$TLSPC_APIKEY
+    [Parameter(Mandatory=$false)][string]$TLSPC_APIKEY
 )
 
 $tempPath = [System.IO.Path]::GetTempPath()
@@ -50,14 +50,17 @@ if ("TLSPC_Hostname") {
 ################################### vcert-task.ps1                         ##########################################
 #####################################################################################################################
 
-[Environment]::SetEnvironmentVariable("TLSPC_APIKEY",$TLSPC_APIKEY, "Machine")
-Log-Message "Sucessfully set TLSPC_APIKEY" 
+if ("TLSPC_APIKEY") {
+    $encodedValue = [Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes($TLSPC_APIKEY))
+    [Environment]::SetEnvironmentVariable("TLSPC_APIKEY_ENCODED",$encodedValue, "Machine")
+    Log-Message "Sucessfully set TLSPC_APIKEY. Use for Demo purposes only." 
+} else{
+   Log-Message "TLSPC_APIKEY to be determined during runtime." 
+}
 
 #####################################################################################################################
 ################################### /END  demo/testing purposes only       ##########################################
 #####################################################################################################################
-
-
 
 # Generate a random hour and minute for the task to run
 $randomMinute = Get-Random -Minimum 0 -Maximum 59
