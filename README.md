@@ -12,9 +12,9 @@ In order to setup a taks the follwoing command can be execute:
     $scriptBlock = [scriptblock]::Create((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/sabixx/vcertplaybooks/main/setup_vcert.ps1'));
     & $scriptBlock -TLSPC_hostname $TLSPC_hostname -TLSPC_PlaybookUrl $TLSPC_PlaybookUrl
 }
-```
+
+
 # for Demo purposed you can write the 
-```
 & {
     $TLSPC_hostname = 'website1';
     $TLSPC_PlaybookUrl = 'https://raw.githubusercontent.com/sabixx/vcertplaybooks/main/TLSPC_US_IIS.yaml';
@@ -22,14 +22,14 @@ In order to setup a taks the follwoing command can be execute:
     $scriptBlock = [scriptblock]::Create((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/sabixx/vcertplaybooks/main/setup_vcert.ps1'));
     & $scriptBlock -TLSPC_hostname $TLSPC_hostname -TLSPC_PlaybookUrl $TLSPC_PlaybookUrl -TLSPC_APIKEY $TLSPC_APIKEY
 }
-``` 
+ 
 
 
 
 
 ## run once examples:
 
-```
+ 
 $Env:TLSPC_APIKEY = 'xxxx'
 ```
 
