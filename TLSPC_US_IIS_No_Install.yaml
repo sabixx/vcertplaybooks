@@ -19,4 +19,4 @@ certificateTasks:
         capiLocation: 'LocalMachine\MY'
         capiFriendlyName: 'vCert Playbook - TLSPC_US_IIS'
         capiIsNonExportable: True
-        afterInstallAction: "echo success!
+        afterInstallAction: 'echo success!'
