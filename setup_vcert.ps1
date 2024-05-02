@@ -34,8 +34,8 @@ Log-Message "playBook          = $playBook"
 Log-Message "tempPath          = $tempPath"
 Log-Message "scriptUrl         = $scriptUrl"
 Log-Message "TLSPC_Hostname    = $TLSPC_Hostname"
-Log-Message "TLSPC_APIKEY      = 1234-xxxx"
-
+if ($TLSPC_APIKEY) { Log-Message "TLSPC_APIKEY      = Fd93-xxxx" }
+else { Log-Message "TLSPC_APIKEY      = not set, recommended" }
 
 # Creating the temporary environment variables in the process
 if ("TLSPC_Hostname") {
