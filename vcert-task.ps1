@@ -14,11 +14,10 @@ param (
 ) 
 
 $tempPath = [System.IO.Path]::GetTempPath()
-
-$playBook = $playbook_url.Split('/')[-1]
-
 $logFilePathDownload = Join-Path -Path  "$tempPath" "vcert_download_log.txt"
 $logFilePathRun = Join-Path -Path  "$tempPath" "vcert_run_log.txt"
+$playBookPath = Join-Path -Path $tempPath -ChildPath $playbook_url.Split('/')[-1]
+$playBook = $playbook_url.Split('/')[-1]
 
 # Function to append log messages with timestamps
 function Log-Message {
@@ -32,6 +31,12 @@ function Log-Message {
 
 Log-Message "==== Start ===="
 
+Log-Message "playbook_url  = $playbook_url"
+Log-Message "playbook      = $playBook"
+Log-Message "tempPath      = $tempPath"
+Log-Message "vcert log file= $logFilePathRun"
+Log-Message "playbook path = $playBookPath"
+
  # Check if the script is running with admin privileges
  if (-not ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")) {
     Log-Message "This script requires administrator privileges. Please run it with administrator privileges."
@@ -40,7 +45,7 @@ Log-Message "==== Start ===="
 
 # check is playbook_url was provided
 if (-not $playbook_url) {
-    Log-Message "no playbook_url provided, existing."
+    Log-Message "no playbook_url provided, exiting."
     exit
 } else {
     Log-Message "using playbook_url = $playbook_url"
@@ -59,14 +64,12 @@ if (-not [Environment]::GetEnvironmentVariable("TLSPC_Hostname_$playBook", "Mach
 ################################### This is for demo/testing purposes only ##########################################
 ################################### replace this with a secure option      ##########################################
 #####################################################################################################################
-
-if (-not [Environment]::GetEnvironmentVariable("TLSPC_APIKEY_$playBook", "Machine")) {
-    Log-Message "no TLSPC_APIKEY set."
-    #exit
-} else {
-    $TLSPC_APIKEY_ENCODED = [Environment]::GetEnvironmentVariable("TLSPC_APIKEY_$playBook", "Machine")
-    $TLSPC_APIKEY = [Text.Encoding]::UTF8.GetString([Convert]::FromBase64String($TLSPC_APIKEY_ENCODED))
-    $Env:TLSPC_APIKEY =$TLSPC_APIKEY
+ 
+if ([Environment]::GetEnvironmentVariable("TLSPC_APIKEY_$playBook", "Machine")) {
+    $TLSPC_APIKEY_ENRYPTED = [Environment]::GetEnvironmentVariable("TLSPC_APIKEY_$playBook", "Machine")
+    $TLSPC_APIKEY_SecureString = ConvertTo-SecureString -String $TLSPC_APIKEY_ENRYPTED   
+    $BSTR = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($TLSPC_APIKEY_SecureString)
+    $Env:TLSPC_APIKEY = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto($BSTR)
     Log-Message "retrieved TLSPC_APIKEY."
 }
 
@@ -74,11 +77,11 @@ if (-not [Environment]::GetEnvironmentVariable("TLSPC_APIKEY_$playBook", "Machin
 ################################### /END  demo/testing purposes only       ##########################################
 #####################################################################################################################
 
-$playBookPath = Join-Path -Path $tempPath -ChildPath $playbook_url.Split('/')[-1]
-
-Log-Message "playbook_url = $playbook_url"
-Log-Message "playbook path = $playBookPath"
-Log-Message "tempPath = $tempPath"
+ # check if API key is availbale in the current process
+ if (-not [Environment]::GetEnvironmentVariable("TLSPC_APIKEY", "Process")) {
+    Log-Message "no TLSPC_APIKEY set, exiting."
+    exit
+}
 
 # Download the Playbook
 Invoke-WebRequest -Uri $playbook_url -OutFile $playBookPath
