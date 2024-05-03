@@ -3,11 +3,6 @@
 # 
 # Env variables required according to the playbook e.g. "TLSPC_APIKEY" 
 # 
-#
-#
-#
-#
-
 
 param (
     [Parameter(Mandatory=$true)][string]$playbook_url
@@ -33,9 +28,9 @@ Log-Message "==== Start ===="
 
 Log-Message "playbook_url  = $playbook_url"
 Log-Message "playbook      = $playBook"
+Log-Message "playbook path = $playBookPath"
 Log-Message "tempPath      = $tempPath"
 Log-Message "vcert log file= $logFilePathRun"
-Log-Message "playbook path = $playBookPath"
 
  # Check if the script is running with admin privileges
  if (-not ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")) {
@@ -120,6 +115,8 @@ Expand-Archive -LiteralPath $zipFilePath -DestinationPath $tempPath -Force
 Log-Message "vcert extracted to $tempPath"
 
 $vcertExePath = Join-Path -Path $tempPath -ChildPath "vcert.exe"
+
+Log-Message "==== Vcert ===="
 
 #write the version to the log file
 $command = '& ' + "$vcertExePath" + ' -version'  + ' 2>&1 | %{ "$_" } | Tee-Object -FilePath ' + "$logFilePathRun" + ' -Append'
