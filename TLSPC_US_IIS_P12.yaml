@@ -17,5 +17,5 @@ certificateTasks:
     installations:
       - format: PKCS12
         file: 'c:\temp\cert.p12'
-        useLegacyPkcs12: false
+        #useLegacyPkcs12: false
         p12Password: "5uperSecr3t5!"
