@@ -30,6 +30,7 @@ Log-Message "playbook_url  = $playbook_url"
 Log-Message "playbook      = $playBook"
 Log-Message "playbook path = $playBookPath"
 Log-Message "tempPath      = $tempPath"
+Log-Message "task log file = $logFilePathDownload"
 Log-Message "vcert log file= $logFilePathRun"
 
  # Check if the script is running with admin privileges
