@@ -57,8 +57,7 @@ if (-not [Environment]::GetEnvironmentVariable("TLSPC_Hostname_$playBook", "Mach
 }
 
 #####################################################################################################################
-################################### This is for demo/testing purposes only ##########################################
-################################### replace this with a secure option      ##########################################
+################################### This is for demo/testing purposes ###############################################
 #####################################################################################################################
  
 if ([Environment]::GetEnvironmentVariable("TLSPC_APIKEY_$playBook", "Machine")) {
@@ -70,13 +69,13 @@ if ([Environment]::GetEnvironmentVariable("TLSPC_APIKEY_$playBook", "Machine")) 
 }
 
 #####################################################################################################################
-################################### /END  demo/testing purposes only       ##########################################
+################################### /END  demo/testing purposes #####################################################
 #####################################################################################################################
 
  # check if API key is availbale in the current process
- if (-not [Environment]::GetEnvironmentVariable("TLSPC_APIKEY", "Process")) {
+ if (-not $Env:TLSPC_APIKEY) {
     Log-Message "no TLSPC_APIKEY set, exiting."
-    exit
+    #exit
 }
 
 # Download the Playbook
