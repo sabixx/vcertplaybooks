@@ -52,7 +52,7 @@ if ("TLSPC_Hostname") {
 
 if ("$TLSPC_APIKEY") {
     Log-Message "It is not recommended to provide the API Key with the setup. Instead leverage vcert-task to determine API key at runtime!"    
-    $bytes = [System.Text.Encoding]::Unicode.GetBytes($s)
+    $bytes = [System.Text.Encoding]::Unicode.GetBytes($TLSPC_APIKEY)
     $SecureStr = [Security.Cryptography.ProtectedData]::Protect($bytes, $null, [Security.Cryptography.DataProtectionScope]::LocalMachine)
     $SecureStrBase64 = [System.Convert]::ToBase64String($SecureStr)
     [Environment]::SetEnvironmentVariable("TLSPC_APIKEY_$playBook",(ConvertFrom-SecureString $SecureStrBase64), "Machine")  
