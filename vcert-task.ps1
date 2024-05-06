@@ -61,8 +61,8 @@ if (-not [Environment]::GetEnvironmentVariable("TLSPC_Hostname_$playBook", "Mach
 #####################################################################################################################
  
 if ([Environment]::GetEnvironmentVariable("TLSPC_APIKEY_$playBook", "Machine")) {
-    $TLSPC_APIKEY_ENRYPTED = [Environment]::GetEnvironmentVariable("TLSPC_APIKEY_$playBook", "Machine")
-    $TLSPC_APIKEY_SecureString = ConvertTo-SecureString -String $TLSPC_APIKEY_ENRYPTED   
+    $TLSPC_APIKEY_ENCRYPTED = [Environment]::GetEnvironmentVariable("TLSPC_APIKEY_$playBook", "Machine")
+    $TLSPC_APIKEY_SecureString = ConvertTo-SecureString -String $TLSPC_APIKEY_ENCRYPTED   
     $BSTR = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($TLSPC_APIKEY_SecureString)
     $Env:TLSPC_APIKEY = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto($BSTR)
     Log-Message "retrieved TLSPC_APIKEY."
@@ -71,6 +71,31 @@ if ([Environment]::GetEnvironmentVariable("TLSPC_APIKEY_$playBook", "Machine")) 
 #####################################################################################################################
 ################################### /END  demo/testing purposes #####################################################
 #####################################################################################################################
+
+ 
+# Check if TLSPC_APIKEY exists in user scope
+$userScope = [Environment]::GetEnvironmentVariable("TLSPC_APIKEY", "User")
+if ($userScope) {
+    Log-Message "TLSPC_APIKEY exists in user scope and its value is: $userScope"
+} else {
+    Log-Message "TLSPC_APIKEY does not exist in user scope"
+}
+
+# Check if TLSPC_APIKEY exists in process scope
+$processScope = [Environment]::GetEnvironmentVariable("TLSPC_APIKEY", "Process")
+if ($processScope) {
+   Log-Message "TLSPC_APIKEY exists in process scope and its value is: $processScope"
+} else {
+    Log-Message "TLSPC_APIKEY does not exist in process scope"
+}
+
+# Check if TLSPC_APIKEY exists in machine scope
+$machineScope = [Environment]::GetEnvironmentVariable("TLSPC_APIKEY", "Machine")
+if ($machineScope) {
+    Log-Message "TLSPC_APIKEY exists in machine scope and its value is: $machineScope"
+} else {
+    Log-Message "TLSPC_APIKEY does not exist in machine scope"
+}
 
  # check if API key is availbale in the current process
  if (-not $Env:TLSPC_APIKEY) {
