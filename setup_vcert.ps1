@@ -70,7 +70,6 @@ $randomMinute = Get-Random -Minimum 0 -Maximum 59
 # Create the trigger for daily execution at the randomized time
 $trigger = New-ScheduledTaskTrigger -Daily -At (Get-Date -Hour $randomHour -Minute $randomMinute -Second 0)
  
-#####################################################################################################################
 # change this for production from Bypass to 'AllSigned' and sign your vcert-task.ps1 with an internal trusted certificate, this will increase security 
 $action = New-ScheduledTaskAction -Execute "PowerShell.exe" -Argument "-ExecutionPolicy RemoteSigned -Command `"& { `$playbook_url = '$TLSPC_PlaybookUrl'; `$scriptBlock = [scriptblock]::Create((New-Object System.Net.WebClient).DownloadString('$scriptUrl')); & `$scriptBlock -playbook_url `$playbook_url` }`""
 
