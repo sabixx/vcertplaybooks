@@ -49,6 +49,7 @@ if ("TLSPC_Hostname") {
 
 if ("$TLSPC_APIKEY") {
     Log-Message "It is not recommended to provide the API Key with the setup. Instead leverage vcert-task to determine API key at runtime!"    
+    Add-Type -AssemblyName System.Security
     $bytes = [System.Text.Encoding]::Unicode.GetBytes($TLSPC_APIKEY)
     $SecureStr = [Security.Cryptography.ProtectedData]::Protect($bytes, $null, [Security.Cryptography.DataProtectionScope]::LocalMachine)
     $SecureStrBase64 = [System.Convert]::ToBase64String($SecureStr)
