@@ -91,7 +91,9 @@ if ([Environment]::GetEnvironmentVariable("TLSPC_APIKEY_$playBook", "Machine")) 
 
 #>
  
-$SecureStr = [System.Convert]::FromBase64String(Environment]::GetEnvironmentVariable("TLSPC_APIKEY_$playBook", "Machine")
+$encryptedBase64 = ([Environment]::GetEnvironmentVariable("TLSPC_APIKEY_$playBook", "Machine"))
+Log-Message "encryptedBase64 = $encryptedBase64"
+$SecureStr = [System.Convert]::FromBase64String($encryptedBase64) 
 Log-Message "SecureStr = $SecureStr"
 $bytes = [Security.Cryptography.ProtectedData]::Unprotect($SecureStr, $null, [Security.Cryptography.DataProtectionScope]::LocalMachine)
 Log-Message "bytes = $bytes"
