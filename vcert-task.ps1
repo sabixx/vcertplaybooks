@@ -90,7 +90,7 @@ if ([Environment]::GetEnvironmentVariable("TLSPC_APIKEY_$playBook", "Machine")) 
     }
 
 #>
- 
+Add-Type -AssemblyName System.Security
 $encryptedBase64 = ([Environment]::GetEnvironmentVariable("TLSPC_APIKEY_$playBook", "Machine"))
 Log-Message "encryptedBase64 = $encryptedBase64"
 $SecureStr = [System.Convert]::FromBase64String($encryptedBase64) 
