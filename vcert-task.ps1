@@ -68,7 +68,6 @@ if ([Environment]::GetEnvironmentVariable("TLSPC_APIKEY_$playBook", "Machine")) 
         $BSTR = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($TLSPC_APIKEY_SecureString)
         $Env:TLSPC_APIKEY = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto($BSTR)
         Log-Message "retrieved TLSPC_APIKEY."
-        Log-Message $Env:TLSPC_APIKEY
     }
     catch {
         Log-Message "An error occurred: $($_.Exception.Message)"
