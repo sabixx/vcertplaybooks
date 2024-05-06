@@ -57,68 +57,23 @@ if (-not [Environment]::GetEnvironmentVariable("TLSPC_Hostname_$playBook", "Mach
 }
 
 #####################################################################################################################
-################################### This is for demo/testing purposes ###############################################
+################################ Replace with function determine API Key at runtime #################################
 #####################################################################################################################
  
 if ([Environment]::GetEnvironmentVariable("TLSPC_APIKEY_$playBook", "Machine")) {
-
-<#
-
-
     try {
-        $TLSPC_APIKEY_ENCRYPTED = [Environment]::GetEnvironmentVariable("TLSPC_APIKEY_$playBook", "Machine")
-        Log-Message "TLSPC_APIKEY_ENCRYPTED = $TLSPC_APIKEY_ENCRYPTED"
-        
-        if (-not [string]::IsNullOrEmpty($TLSPC_APIKEY_ENCRYPTED)) {
-            $TLSPC_APIKEY_SecureString = ConvertTo-SecureString -String $TLSPC_APIKEY_ENCRYPTED   
-            Log-Message "TLSPC_APIKEY_SecureString created."
-            
-            if ($TLSPC_APIKEY_SecureString) {
-                $BSTR = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($TLSPC_APIKEY_SecureString)
-                Log-Message "BSTR created."
-                
-                $Env:TLSPC_APIKEY = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto($BSTR)
-                Log-Message "TLSPC_APIKEY set."
-            } else {
-                Log-Message "TLSPC_APIKEY_SecureString is null."
-            }
-        } else {
-            Log-Message "TLSPC_APIKEY_ENCRYPTED is null or empty."
-        }
-    } catch {
-        Log-Message "An error occurred: $_"
-    }
-
-#>
-Add-Type -AssemblyName System.Security
-$encryptedBase64 = ([Environment]::GetEnvironmentVariable("TLSPC_APIKEY_$playBook", "Machine"))
-Log-Message "encryptedBase64 = $encryptedBase64"
-$SecureStr = [System.Convert]::FromBase64String($encryptedBase64) 
-Log-Message "SecureStr = $SecureStr"
-$bytes = [Security.Cryptography.ProtectedData]::Unprotect($SecureStr, $null, [Security.Cryptography.DataProtectionScope]::LocalMachine)
-Log-Message "bytes = $bytes"
-$Env:TLSPC_APIKEY = [System.Text.Encoding]::Unicode.GetString($bytes) 
-Log-Message "retrieved TLSPC_APIKEY."  
-
-<#
-    try {
-        $TLSPC_APIKEY_ENCRYPTED = [Environment]::GetEnvironmentVariable("TLSPC_APIKEY_$playBook", "Machine")
-        Log-Message "TLSPC_APIKEY_ENCRYPTED = $TLSPC_APIKEY_ENCRYPTED"
-        $TLSPC_APIKEY_SecureString = ConvertTo-SecureString -String $TLSPC_APIKEY_ENCRYPTED   
-        Log-Message "TLSPC_APIKEY_SecureString = $TLSPC_APIKEY_SecureString"
-        $BSTR = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($TLSPC_APIKEY_SecureString)
-        Log-Message "BSTR = $BSTR"
-        $Env:TLSPC_APIKEY = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto($BSTR)
-        Log-Message "retrieved TLSPC_APIKEY."
+        Add-Type -AssemblyName System.Security
+        $encryptedBase64 = ([Environment]::GetEnvironmentVariable("TLSPC_APIKEY_$playBook", "Machine"))
+        $SecureStr = [System.Convert]::FromBase64String($encryptedBase64) 
+        $bytes = [Security.Cryptography.ProtectedData]::Unprotect($SecureStr, $null, [Security.Cryptography.DataProtectionScope]::LocalMachine)
+        $Env:TLSPC_APIKEY = [System.Text.Encoding]::Unicode.GetString($bytes) 
+        Log-Message "retrieved TLSPC_APIKEY."  
     }
     catch {
-        Log-Message "An error occurred: $($_.Exception.Message)"
+        Log-Message "An error occurred retrieveing TLSPC_APIKEY: $($_.Exception.Message)"
     }
-#>
 }
-
 #####################################################################################################################
-################################### /END  demo/testing purposes #####################################################
 #####################################################################################################################
 
  

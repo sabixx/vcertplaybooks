@@ -44,10 +44,7 @@ if ("TLSPC_Hostname") {
 }
 
 #####################################################################################################################
-################################### This is for demo/testing purposes only ##########################################
-################################### replace it with a better way to        ##########################################
-################################### reteive the API key during runtime in  ##########################################
-################################### vcert-task.ps1                         ##########################################
+################################## It is recommended determine API key at runtime! ##################################
 #####################################################################################################################
 
 if ("$TLSPC_APIKEY") {
@@ -60,19 +57,7 @@ if ("$TLSPC_APIKEY") {
     Log-Message "TLSPC_APIKEY determined during runtime." 
 }
 
-<#
-if ("$TLSPC_APIKEY") {
-    Log-Message "It is not recommended to provide the API Key with the setup. Instead leverage vcert-task to determine API key at runtime!"    
-    $encrypted = ConvertTo-SecureString $TLSPC_APIKEY -AsPlainText -Force  
-    [Environment]::SetEnvironmentVariable("TLSPC_APIKEY_$playBook",(ConvertFrom-SecureString $encrypted), "Machine")  
-    Log-Message "Sucessfully set TLSPC_APIKEY_$playBook." 
-} else{
-   Log-Message "TLSPC_APIKEY determined during runtime." 
-}
-#>
-
 #####################################################################################################################
-################################### /END  demo/testing purposes only       ##########################################
 #####################################################################################################################
 
 # Generate a random hour and minute for the task to run
