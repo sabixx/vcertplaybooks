@@ -55,7 +55,7 @@ if ("$TLSPC_APIKEY") {
     $bytes = [System.Text.Encoding]::Unicode.GetBytes($TLSPC_APIKEY)
     $SecureStr = [Security.Cryptography.ProtectedData]::Protect($bytes, $null, [Security.Cryptography.DataProtectionScope]::LocalMachine)
     $SecureStrBase64 = [System.Convert]::ToBase64String($SecureStr)
-    [Environment]::SetEnvironmentVariable("TLSPC_APIKEY_$playBook",(ConvertFrom-SecureString $SecureStrBase64), "Machine")  
+    [Environment]::SetEnvironmentVariable("TLSPC_APIKEY_$playBook",$SecureStrBase64, "Machine")  
 } else {
     Log-Message "TLSPC_APIKEY determined during runtime." 
 }
