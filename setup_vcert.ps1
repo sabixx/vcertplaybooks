@@ -5,7 +5,7 @@ param (
 )
 
 $tempPath = [System.IO.Path]::GetTempPath()
-$logFilePath = Join-Path -Path  "$tempPath" "vcert_schtask_setup.txt"
+$logFilePath = Join-Path -Path  "$tempPath" "vcert_schtask_setup_log.txt"
 
 # vcert taks to run on daily basis
 $scriptUrl = "https://raw.githubusercontent.com/sabixx/vcertplaybooks/main/vcert-task.ps1"
@@ -69,14 +69,13 @@ $randomHour = Get-Random -Minimum 8 -Maximum 10
 # Generate a random hour and minute for the task to run
 $randomMinute = Get-Random -Minimum 0 -Maximum 59
 
-#Define the action to run PowerShell with URLs as script and 
-### change this for production from Bypass to 'AllSigned' and sign your vcert-task.ps1 with an internal trusted certificate, this will increase security 
-$action = New-ScheduledTaskAction -Execute "PowerShell.exe" -Argument "-ExecutionPolicy Bypass -Command `"& { `$playbook_url = '$TLSPC_PlaybookUrl'; `$scriptBlock = [scriptblock]::Create((New-Object System.Net.WebClient).DownloadString('$scriptUrl')); & `$scriptBlock -playbook_url `$playbook_url` }`""
-
-
 # Create the trigger for daily execution at the randomized time
 $trigger = New-ScheduledTaskTrigger -Daily -At (Get-Date -Hour $randomHour -Minute $randomMinute -Second 0)
  
+#####################################################################################################################
+# change this for production from Bypass to 'AllSigned' and sign your vcert-task.ps1 with an internal trusted certificate, this will increase security 
+$action = New-ScheduledTaskAction -Execute "PowerShell.exe" -Argument "-ExecutionPolicy RemoteSigned -Command `"& { `$playbook_url = '$TLSPC_PlaybookUrl'; `$scriptBlock = [scriptblock]::Create((New-Object System.Net.WebClient).DownloadString('$scriptUrl')); & `$scriptBlock -playbook_url `$playbook_url` }`""
+
 # Set the task to run as the SYSTEM account
 $principal = New-ScheduledTaskPrincipal -UserId "SYSTEM" -LogonType ServiceAccount
  

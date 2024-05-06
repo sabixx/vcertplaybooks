@@ -8,11 +8,11 @@ param (
     [Parameter(Mandatory=$true)][string]$playbook_url
 ) 
 
+$playBook = $playbook_url.Split('/')[-1]
 $tempPath = [System.IO.Path]::GetTempPath()
 $logFilePathDownload = Join-Path -Path  "$tempPath" "vcert_download_log.txt"
 $logFilePathRun = Join-Path -Path  "$tempPath" "vcert_run_log.txt"
-$playBookPath = Join-Path -Path $tempPath -ChildPath $playbook_url.Split('/')[-1]
-$playBook = $playbook_url.Split('/')[-1]
+$playBookPath = Join-Path -Path $tempPath -ChildPath $playBook
 
 # Function to append log messages with timestamps
 function Log-Message {
