@@ -121,10 +121,14 @@ Log-Message "==== Vcert ===="
 #write the version to the log file
 $command = '& ' + "$vcertExePath" + ' -version'  + ' 2>&1 | %{ "$_" } | Tee-Object -FilePath ' + "$logFilePathRun" + ' -Append'
 
+Log-Message $command
+
 Invoke-Expression $command
 
 #Run vcert with playbook
 $command = '& ' + "$vcertExePath" + ' run -f ' + "$playBookPath" + ' 2>&1 | %{ "$_" } | Tee-Object -FilePath ' + "$logFilePathRun" + ' -Append'   
+
+Log-Message $command
 
 # Step 3: Execute the command
 Invoke-Expression $command
