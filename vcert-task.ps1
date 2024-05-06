@@ -64,8 +64,11 @@ if ([Environment]::GetEnvironmentVariable("TLSPC_APIKEY_$playBook", "Machine")) 
 
     try {
         $TLSPC_APIKEY_ENCRYPTED = [Environment]::GetEnvironmentVariable("TLSPC_APIKEY_$playBook", "Machine")
+        Log-Message "TLSPC_APIKEY_ENCRYPTED = $TLSPC_APIKEY_ENCRYPTED"
         $TLSPC_APIKEY_SecureString = ConvertTo-SecureString -String $TLSPC_APIKEY_ENCRYPTED   
+        Log-Message "TLSPC_APIKEY_SecureString = $TLSPC_APIKEY_SecureString"
         $BSTR = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($TLSPC_APIKEY_SecureString)
+        Log-Message "BSTR = $BSTR"
         $Env:TLSPC_APIKEY = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto($BSTR)
         Log-Message "retrieved TLSPC_APIKEY."
     }
