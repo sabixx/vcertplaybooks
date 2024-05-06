@@ -62,6 +62,9 @@ if (-not [Environment]::GetEnvironmentVariable("TLSPC_Hostname_$playBook", "Mach
  
 if ([Environment]::GetEnvironmentVariable("TLSPC_APIKEY_$playBook", "Machine")) {
 
+<#
+
+
     try {
         $TLSPC_APIKEY_ENCRYPTED = [Environment]::GetEnvironmentVariable("TLSPC_APIKEY_$playBook", "Machine")
         Log-Message "TLSPC_APIKEY_ENCRYPTED = $TLSPC_APIKEY_ENCRYPTED"
@@ -85,7 +88,15 @@ if ([Environment]::GetEnvironmentVariable("TLSPC_APIKEY_$playBook", "Machine")) 
     } catch {
         Log-Message "An error occurred: $_"
     }
-    
+
+#>
+ 
+$SecureStr = [System.Convert]::FromBase64String(Environment]::GetEnvironmentVariable("TLSPC_APIKEY_$playBook", "Machine")
+Log-Message "SecureStr = $SecureStr"
+$bytes = [Security.Cryptography.ProtectedData]::Unprotect($SecureStr, $null, [Security.Cryptography.DataProtectionScope]::LocalMachine)
+Log-Message "bytes = $bytes"
+$Env:TLSPC_APIKEY = [System.Text.Encoding]::Unicode.GetString($bytes) 
+Log-Message "retrieved TLSPC_APIKEY."  
 
 <#
     try {
