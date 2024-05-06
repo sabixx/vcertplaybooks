@@ -35,9 +35,9 @@ Log-Message "vcert log file= $logFilePathRun"
 
  # Check if the script is running with admin privileges
  if (-not ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")) {
-    Log-Message "This script requires administrator privileges. Please run it with administrator privileges."
-    exit
-}
+    Log-Message "Not running as Administrator. Some use cases requier administrator privileges."
+    #exit #do not exit out, some use cases may not requier admin permissions.
+ }
 
 # check is playbook_url was provided
 if (-not $playbook_url) {
