@@ -18,6 +18,7 @@ certificateTasks:
     installations:
       - format: CAPI
         capiLocation: 'LocalMachine\MY'
+        useLegacyP12: '{{ Env "useLegacyP12" }}'
         capiFriendlyName: 'vCert Playbook - TLSPC_US_RDP'
         capiIsNonExportable: True
         afterInstallAction: $path = (Get-WmiObject -class "Win32_TSGeneralSetting" -Namespace root\cimv2\terminalservices -Filter "TerminalName='RDP-tcp'").__path; $result=Set-WmiInstance -Path $path -argument @{SSLCertificateSHA1Hash="$Env:VCERT_RDP_THUMBPRINT"}
