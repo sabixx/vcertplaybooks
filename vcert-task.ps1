@@ -47,6 +47,18 @@ if (-not $playbook_url) {
     Log-Message "using playbook_url = $playbook_url"
 }
 
+# Check if the OS is Windows Server 2012 or 2016
+$osVersion = (Get-WmiObject -Class Win32_OperatingSystem).Version
+if ($osVersion -like "6.2*" -or $osVersion -like "10.0*") {
+    # Windows Server 2012 (6.2) or Windows Server 2016 (10.0)
+    [System.Environment]::SetEnvironmentVariable("useLegacyP12", "true", [System.EnvironmentVariableTarget]::Process)
+} else {
+    # Not Windows Server 2012 or 2016
+    [System.Environment]::SetEnvironmentVariable("useLegacyP12", "false", [System.EnvironmentVariableTarget]::Process)
+}
+Log-Message "useLegacyP12 = $useLegacyP12"
+
+
 # Set $TLSPC_Hostname as an environment variable for the current process only
 if (-not [Environment]::GetEnvironmentVariable("TLSPC_Hostname_$playBook", "Machine")) {
     Log-Message "no TLSPC_hostname set, using ::GetHostName."
