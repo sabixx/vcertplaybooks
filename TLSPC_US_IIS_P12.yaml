@@ -17,5 +17,5 @@ certificateTasks:
     installations:
       - format: PKCS12
         file: 'c:\temp\cert.p12'
-        useLegacyP12: '{{ Env "useLegacyP12" | default "false" }}'
+        useLegacyP12: '{{ Env "useLegacyP12" }}'
         p12Password: "5uperSecr3t5!"
