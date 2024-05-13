@@ -17,7 +17,7 @@ certificateTasks:
     installations:
       - format: CAPI
         capiLocation: 'LocalMachine\MY'
-        useLegacyP12: '{{ Env "useLegacyP12" }}'
+        useLegacyP12: '{{ Env "useLegacyP12" "false"}}'
         capiFriendlyName: 'vCert Playbook - TLSPC_US_IIS_No_Install'
         capiIsNonExportable: True
         afterInstallAction: 'echo success!'
