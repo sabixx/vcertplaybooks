@@ -51,59 +51,134 @@ if (-not $playbook_url) {
 Invoke-WebRequest -Uri $playbook_url -OutFile $playBookPath
 Log-Message "Playbook downloaded to $playBookPath"
 
+# Determine the platform (vaas or tpp)
 try {
-        $platform = switch -regex -file "$playBookPath" {'platform:'{"$_"} }
-        $platform = $platform -replace 'platform:',''
-        $platform = ($platform.Split("#"))[0]
-        $platform = $platform -replace '[^a-zA-Z0-9]', '' 
-        Log-Message "Platform = $platform"  
-    }  
-    catch {
-        Log-Message "could not determine platform."
-    }
+    $platform = switch -regex -file "$playBookPath" {'platform:'{"$_"} }
+    $platform = $platform -replace 'platform:',''
+    $platform = ($platform.Split("#"))[0].Trim()
+    $platform = $platform -replace '[^a-zA-Z0-9]', '' 
+    Log-Message "Platform = $platform"  
+}  
+catch {
+    Log-Message "could not determine platform."
+}
 
 # Set $TLSPC_Hostname as an environment variable for the current process only
 if (-not [Environment]::GetEnvironmentVariable("TLSPC_Hostname_$playBook", "Machine")) {
-    Log-Message "no TLSPC_hostname set, using ::GetHostName."
-    [Environment]::SetEnvironmentVariable("TLSPC_Hostname", [System.Net.Dns]::GetHostName(), "Process")
+Log-Message "no TLSPC_hostname set, using ::GetHostName."
+[Environment]::SetEnvironmentVariable("TLSPC_Hostname", [System.Net.Dns]::GetHostName(), "Process")
 } else {
-    $Env:TLSPC_Hostname = [System.Environment]::GetEnvironmentVariable("TLSPC_Hostname_$playBook",'Machine')
-    Log-Message "retrieved TLSPC_hostname = $Env:TLSPC_Hostname"
+$Env:TLSPC_Hostname = [System.Environment]::GetEnvironmentVariable("TLSPC_Hostname_$playBook",'Machine')
+Log-Message "retrieved TLSPC_hostname = $Env:TLSPC_Hostname"
 }
 
+switch ($platform) {
+#####################################################################################################################
+################################ # TLSDC with windows Integrated Auth ###############################################
+#####################################################################################################################
+    'tpp' {
+        try {
+            $TPPurl = switch -regex (Get-Content "$playBookPath") {'url:'{"$_"} }
+            $TPPurl = $TPPurl -replace 'url:', ''
+            $TPPurl = ($TPPurl.Split("#"))[0].Trim()
+            Log-Message "TPPurl = $TPPurl"  
+
+            $client_id = switch -regex (Get-Content "$playBookPath") {'clientId:'{"$_"} }
+            if ($client_id -eq $null -or $client_id -eq "") {
+                $client_id = "vcert-cli"
+            } else {
+                $client_id = $client_id -replace 'clientId:', ''
+                $client_id = ($client_id.Split("#"))[0].Trim()
+            }
+            Log-Message "client_id = $client_id" 
+
+            $response = Invoke-RestMethod "$TPPUrl/vedauth/authorize/integrated" -UseDefaultCredentials -Method POST -Body (@{"client_id"="$client_id"; "scope"="certificate:manage"} | ConvertTo-Json) -ContentType "application/json"
+            $env:TPP_ACCESS_TOKEN = $response.access_token
+            $env:TPP_REFRESH_TOKEN = $response.refresh_token
+
+            Log-Message "retrieved oAuth bearer token."  
+        }
+        catch {
+            Log-Message "An error occurred retrieving oAuth bearer token: $($_.Exception.Message)"
+            Log-Message $response
+        }
+
+        if (-not $Env:TPP_ACCESS_TOKEN) {
+            Log-Message "no TPP_ACCESS_TOKEN set, exiting."
+            exit
+        }
+    }
+
+#####################################################################################################################
+################################ Replace with function determine API Key at runtime #################################
+#####################################################################################################################
+
+    'vaas' {
+        if ([Environment]::GetEnvironmentVariable("TLSPC_APIKEY_$playBook", "Machine")) {
+            try {
+                Add-Type -AssemblyName System.Security
+                $encryptedBase64 = ([Environment]::GetEnvironmentVariable("TLSPC_APIKEY_$playBook", "Machine"))
+                $SecureStr = [System.Convert]::FromBase64String($encryptedBase64) 
+                $bytes = [Security.Cryptography.ProtectedData]::Unprotect($SecureStr, $null, [Security.Cryptography.DataProtectionScope]::LocalMachine)
+                $Env:TLSPC_APIKEY = [System.Text.Encoding]::Unicode.GetString($bytes) 
+                Log-Message "retrieved TLSPC_APIKEY."  
+            }
+            catch {
+                Log-Message "An error occurred retrieving TLSPC_APIKEY: $($_.Exception.Message)"
+            }
+        }
+
+        if (-not $Env:TLSPC_APIKEY) {
+            Log-Message "no TLSPC_APIKEY set, exiting."
+            exit
+        }
+    }
+
+    default {
+        Log-Message "Unsupported platform: $platform"
+        exit
+    }
+}
+
+<#
 #####################################################################################################################
 ################################ # TLSDC with windows Integrated Auth ###############################################
 #####################################################################################################################
 
 if ($platform -eq 'tpp') {
 
-        try {
+try {
 
-            $TPPurl = switch -regex -file "$playBookPath" {'url:'{"$_"} }
-            $TPPurl = $TPPurl -replace 'url:',''
-            $TPPurl = ($TPPurl.Split("#"))[0]
-            Log-Message "TPPurl = $TPPurl"  
+    $TPPurl = switch -regex (Get-Content "$playBookPath") {'url:'{"$_"} }
+    $TPPurl = $TPPurl -replace 'url:',''
+    $TPPurl = ($TPPurl.Split("#"))[0].Trim()
+    Log-Message "TPPurl = $TPPurl"  
 
-            $client_id = switch -regex -file "$playBookPath" {'clientId:'{"$_"} }
-            $client_id = $client_id -replace 'url:',''
-            $client_id = ($client_id.Split("#"))[0]
-            Log-Message "client_id = $client_id" 
-
-            $response = Invoke-RestMethod "$TPPUrl/vedauth/authorize/integrated" -UseDefaultCredentials -Method POST -Body (@{"client_id"="$client_id"; "scope"="certificate:manage"}|ConvertTo-Json) -ContentType "application/json")
-            $env:TPP_ACCESS_TOKEN = $response.access_token
-
-            Log-Message "retrieved oAuth bearer token."  
-        }
-        catch {
-            Log-Message "An error occurred retrieveing oAuth bearer token: $($_.Exception.Message)"
-        }
-
-    if (-not $Env:TPP_ACCESS_TOKEN) {
-        Log-Message "no TPP_ACCESS_TOKEN set, exiting."
-        exit
+    $client_id = switch -regex (Get-Content "$playBookPath") {'clientId:'{"$_"} }
+    if ($client_id -eq $null -or $client_id -eq "") {
+        $client_id = "vcert-cli"
+    } else {
+    $client_id = $client_id -replace 'clientId:',''
+    $client_id = ($client_id.Split("#"))[0].Trim()
     }
+    Log-Message "client_id = $client_id" 
 
+    $response = Invoke-RestMethod "$TPPUrl/vedauth/authorize/integrated" -UseDefaultCredentials -Method POST -Body (@{"client_id"="$client_id"; "scope"="certificate:manage"} | ConvertTo-Json) -ContentType "application/json"
+    $env:TPP_ACCESS_TOKEN = $response.access_token
+    $env:TPP_REFRESH_TOKEN = $response.refresh_token
+
+    Log-Message "retrieved oAuth bearer token."  
 }
+catch {
+    Log-Message "An error occurred retrieving oAuth bearer token: $($_.Exception.Message)"
+}
+
+if (-not $Env:TPP_ACCESS_TOKEN) {
+    Log-Message "no TPP_ACCESS_TOKEN set, exiting."
+    exit
+}
+} 
+
 
 #####################################################################################################################
 ################################ Replace with function determine API Key at runtime #################################
@@ -133,6 +208,8 @@ if ($platform -eq 'vaas') {
     }
 
 }
+
+#>
 
 
 # GitHub API URL for the latest release of vcert
