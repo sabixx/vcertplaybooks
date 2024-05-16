@@ -47,20 +47,16 @@ if (-not $playbook_url) {
     Log-Message "using playbook_url = $playbook_url"
 }
 
-<# removed
-# Check if the OS is Windows Server 2012 (6.2.9200), 2012 R2 (6.3.9600), 2016 (10.0.14393) for LegacyP12 requierments
-$osInfo = Get-WmiObject -Class Win32_OperatingSystem
-$osVersion = $osInfo.Version
-$osBuild = $osInfo.BuildNumber
-if (($osVersion -like "6.2*" -and $osBuild -eq "9200") -or 
-    ($osVersion -like "6.3*" -and $osBuild -eq "9600") -or 
-    ($osVersion -like "10.0*" -and $osBuild -eq "14393")) {
-    [System.Environment]::SetEnvironmentVariable("useLegacyP12", "true", [System.EnvironmentVariableTarget]::Process)
-} else {
-    [System.Environment]::SetEnvironmentVariable("useLegacyP12", "false", [System.EnvironmentVariableTarget]::Process)
+try {
+        $platform = switch -regex -file "$playBookPath" {'platform:'{"$_"} }
+        $platform = $platform -replace 'platform:',''
+        $platform = ($platform.Split("#"))[0]
+        $platform = $platform -replace '[^a-zA-Z0-9]', '' 
+        Log-Message "Platform = $platform"  
+    }  
+} catch {
+    Log-Message "could not determine platform."
 }
-Log-Message "useLegacyP12 = $([System.Environment]::GetEnvironmentVariable('useLegacyP12', 'Process'))"
-#>
 
 # Set $TLSPC_Hostname as an environment variable for the current process only
 if (-not [Environment]::GetEnvironmentVariable("TLSPC_Hostname_$playBook", "Machine")) {
@@ -72,31 +68,68 @@ if (-not [Environment]::GetEnvironmentVariable("TLSPC_Hostname_$playBook", "Mach
 }
 
 #####################################################################################################################
-################################ Replace with function determine API Key at runtime #################################
+################################ # TLSDC with windows Integrated Auth ###############################################
 #####################################################################################################################
- 
-if ([Environment]::GetEnvironmentVariable("TLSPC_APIKEY_$playBook", "Machine")) {
-    try {
-        Add-Type -AssemblyName System.Security
-        $encryptedBase64 = ([Environment]::GetEnvironmentVariable("TLSPC_APIKEY_$playBook", "Machine"))
-        $SecureStr = [System.Convert]::FromBase64String($encryptedBase64) 
-        $bytes = [Security.Cryptography.ProtectedData]::Unprotect($SecureStr, $null, [Security.Cryptography.DataProtectionScope]::LocalMachine)
-        $Env:TLSPC_APIKEY = [System.Text.Encoding]::Unicode.GetString($bytes) 
-        Log-Message "retrieved TLSPC_APIKEY."  
+
+if ($platform -eq 'tpp') {
+
+        try {
+
+            $TPPurl = switch -regex -file "$playBookPath" {'url:'{"$_"} }
+            $TPPurl = $TPPurl -replace 'url:',''
+            $TPPurl = ($TPPurl.Split("#"))[0]
+            Log-Message "TPPurl = $TPPurl"  
+
+            $client_id = switch -regex -file "$playBookPath" {'clientId:'{"$_"} }
+            $client_id = $client_id -replace 'url:',''
+            $client_id = ($client_id.Split("#"))[0]
+            Log-Message "client_id = $client_id" 
+
+            $response = Invoke-RestMethod "$TPPUrl/vedauth/authorize/integrated" -UseDefaultCredentials -Method POST -Body (@{"client_id"="$client_id"; "scope"="certificate:manage"}|ConvertTo-Json) -ContentType "application/json")
+            $env:TPP_ACCESS_TOKEN = $response.access_token
+
+            Log-Message "retrieved oAuth bearer token."  
+        }
+        catch {
+            Log-Message "An error occurred retrieveing oAuth bearer token: $($_.Exception.Message)"
+        }
+
+    if (-not $Env:TPP_ACCESS_TOKEN) {
+        Log-Message "no TPP_ACCESS_TOKEN set, exiting."
+        exit
     }
-    catch {
-        Log-Message "An error occurred retrieveing TLSPC_APIKEY: $($_.Exception.Message)"
-    }
+
 }
 
 #####################################################################################################################
+################################ Replace with function determine API Key at runtime #################################
 #####################################################################################################################
- 
- # check if API key is availbale in the current process
- if (-not $Env:TLSPC_APIKEY) {
-    Log-Message "no TLSPC_APIKEY set, exiting."
-    exit
+
+if ($platform -eq 'vaas') {
+
+    if ([Environment]::GetEnvironmentVariable("TLSPC_APIKEY_$playBook", "Machine")) {
+        try {
+            Add-Type -AssemblyName System.Security
+            $encryptedBase64 = ([Environment]::GetEnvironmentVariable("TLSPC_APIKEY_$playBook", "Machine"))
+            $SecureStr = [System.Convert]::FromBase64String($encryptedBase64) 
+            $bytes = [Security.Cryptography.ProtectedData]::Unprotect($SecureStr, $null, [Security.Cryptography.DataProtectionScope]::LocalMachine)
+            $Env:TLSPC_APIKEY = [System.Text.Encoding]::Unicode.GetString($bytes) 
+            Log-Message "retrieved TLSPC_APIKEY."  
+        }
+        catch {
+            Log-Message "An error occurred retrieveing TLSPC_APIKEY: $($_.Exception.Message)"
+        }
+    }
+#####################################################################################################################
+#####################################################################################################################
+
+    if (-not $Env:TLSPC_APIKEY) {
+        Log-Message "no TLSPC_APIKEY set, exiting."
+        exit
+    }
+
 }
+
 
 # Download the Playbook
 Invoke-WebRequest -Uri $playbook_url -OutFile $playBookPath
