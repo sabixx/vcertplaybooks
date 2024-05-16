@@ -65,7 +65,7 @@ catch {
 
 # Set $TLSPC_Hostname as an environment variable for the current process only
 if (-not [Environment]::GetEnvironmentVariable("TLSPC_Hostname_$playBook", "Machine")) {
-Log-Message "no TLSPC_hostname set, using ::GetHostName."
+Log-Message "no TLSPC_hostname_$playBook set, using ::GetHostName."
 [Environment]::SetEnvironmentVariable("TLSPC_Hostname", [System.Net.Dns]::GetHostName(), "Process")
 } else {
 $Env:TLSPC_Hostname = [System.Environment]::GetEnvironmentVariable("TLSPC_Hostname_$playBook",'Machine')
