@@ -58,9 +58,9 @@ try {
         $platform = $platform -replace '[^a-zA-Z0-9]', '' 
         Log-Message "Platform = $platform"  
     }  
-} catch {
-    Log-Message "could not determine platform."
-}
+    catch {
+        Log-Message "could not determine platform."
+    }
 
 # Set $TLSPC_Hostname as an environment variable for the current process only
 if (-not [Environment]::GetEnvironmentVariable("TLSPC_Hostname_$playBook", "Machine")) {
