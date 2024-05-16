@@ -47,6 +47,10 @@ if (-not $playbook_url) {
     Log-Message "using playbook_url = $playbook_url"
 }
 
+# Download the Playbook
+Invoke-WebRequest -Uri $playbook_url -OutFile $playBookPath
+Log-Message "Playbook downloaded to $playBookPath"
+
 try {
         $platform = switch -regex -file "$playBookPath" {'platform:'{"$_"} }
         $platform = $platform -replace 'platform:',''
@@ -130,10 +134,6 @@ if ($platform -eq 'vaas') {
 
 }
 
-
-# Download the Playbook
-Invoke-WebRequest -Uri $playbook_url -OutFile $playBookPath
-Log-Message "Playbook downloaded to $playBookPath"
 
 # GitHub API URL for the latest release of vcert
 $apiUrl = "https://api.github.com/repos/Venafi/vcert/releases/latest"
