@@ -24,6 +24,7 @@ In order to setup a taks the follwoing command can be execute:
 }
 ```
 # with API key (will be set as an encrypted environment variable protrected by the DPAPI key)
+```
 & {
     $TLSPC_hostname = 'website1';
     $TLSPC_PlaybookUrl = 'https://raw.githubusercontent.com/sabixx/vcertplaybooks/main/TLSPC_US_IIS.yaml';
