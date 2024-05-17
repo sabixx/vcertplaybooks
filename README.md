@@ -14,7 +14,7 @@ In order to setup a taks the follwoing command can be execute:
 # Create scheduled Taks:
 
 ### for IIS with a website called vcert_website and TLS PC use this:
-##TLS PC
+## TLS PC
 ```
 & {
     $TLSPC_hostname = 'website1';
@@ -33,7 +33,7 @@ In order to setup a taks the follwoing command can be execute:
     & $scriptBlock -TLSPC_hostname $TLSPC_hostname -TLSPC_PlaybookUrl $TLSPC_PlaybookUrl -TLSPC_APIKEY $TLSPC_APIKEY
 }
 ```
-##TLS DC
+## TLS DC
 Windows Integrated Auth
 ```
 & {
