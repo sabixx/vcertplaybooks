@@ -81,4 +81,3 @@ $taskName = "vcert - $playBook"
 Register-ScheduledTask -TaskName $taskName -Action $action -Trigger $trigger -Principal $principal -Description "runs the vcert playbook, checks certificates(s) and performs renewal when necessary"
 Log-Message "Created task succesfully: vcert - $playBook"
 
-# Read-Host -Prompt "Press Enter to exit. 
