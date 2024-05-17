@@ -6,6 +6,8 @@ It can be used to create a scheduled task, or just run it once and not run conse
 
 Before using it, check the corresponding playbook it the zone matches your policy, the hostname, domain name and if after install comands comply with your configuration and if your API key, oAuth scope maches the use case.
 
+For other purposes other than demos the scripts should be modified to 'fit for puropose'.
+
 In order to setup a taks the follwoing command can be execute:
  
 
@@ -21,8 +23,7 @@ In order to setup a taks the follwoing command can be execute:
     & $scriptBlock -TLSPC_hostname $TLSPC_hostname -TLSPC_PlaybookUrl $TLSPC_PlaybookUrl
 }
 ```
-### for Demo purposes, with API Key
-```
+# with API key (will be set as an encrypted environment variable protrected by the DPAPI key)
 & {
     $TLSPC_hostname = 'website1';
     $TLSPC_PlaybookUrl = 'https://raw.githubusercontent.com/sabixx/vcertplaybooks/main/TLSPC_US_IIS.yaml';
