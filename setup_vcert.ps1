@@ -35,7 +35,7 @@ Log-Message "tempPath          = $tempPath"
 Log-Message "scriptUrl         = $scriptUrl"
 Log-Message "TLSPC_Hostname    = $TLSPC_Hostname"
 if ($TLSPC_APIKEY) { Log-Message "TLSPC_APIKEY      = Fd93-xxxx" }
-else { Log-Message "TLSPC_APIKEY      = not set, recommended" }
+else { Log-Message "TLSPC_APIKEY / TPP_ACCESS_TOKEN = not set, recommended" }
 
 # Creating the temporary environment variables in the process
 if ("TLSPC_Hostname") {
@@ -55,7 +55,7 @@ if ("$TLSPC_APIKEY") {
     $SecureStrBase64 = [System.Convert]::ToBase64String($SecureStr)
     [Environment]::SetEnvironmentVariable("TLSPC_APIKEY_$playBook",$SecureStrBase64, "Machine")  
 } else {
-    Log-Message "TLSPC_APIKEY determined during runtime." 
+    Log-Message "TLSPC_APIKEY / TPP_ACCESS_TOKEN determined during runtime." 
 }
 
 #####################################################################################################################
