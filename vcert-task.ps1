@@ -102,7 +102,7 @@ switch ($platform) {
             }
             Log-Message "client_id = $client_id" 
 
-            $response_grant = Invoke-RestMethod "$TPPUrl/vedauth/authorize/integrated" -UseDefaultCredentials -Method POST -Body (@{"client_id"="$client_id"; "scope"="certificate:manage"} | ConvertTo-Json) -ContentType "application/json" - UseBasicParsing
+            $response_grant = Invoke-RestMethod "$TPPUrl/vedauth/authorize/integrated" -UseDefaultCredentials -Method POST -Body (@{"client_id"="$client_id"; "scope"="certificate:manage"} | ConvertTo-Json) -ContentType "application/json" -UseBasicParsing
             $env:TPP_ACCESS_TOKEN = $response_grant.access_token
             $env:TPP_REFRESH_TOKEN = $response_grant.refresh_token
 
