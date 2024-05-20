@@ -1,16 +1,18 @@
-# This demo shows some options how vcert can be run in 
-# the script performs several taks such downloading the 
-# latest version of vcert and playbook. 
+# This demo shows some options how vcert can be run. 
+# The script performs several taks such downloading the 
+# latest version of vcert and playbook. It's performing
+# authentication based on the platform of the playbook.
+#
 # Depening on the use case it's requiered to add, remove
 # parts of this script. It's intended as a starting point
 # making it easier to deploy vcert for the coresponding
-# use case. 
+# use case.
 #
 # For each of the part there's is a - RECOMMENDATION IF
 # CERTAIN PARTS SHOULD BE USED OR IF THEY ARE OPTIONAL
 # 
+# (C) 2024 Jens Sabitzer jens.sabitzer@venafi.com
 #
-# 
 
 
 param (
@@ -150,37 +152,37 @@ switch ($platform) {
     }
 }
 
-# GitHub API URL for the latest release of vcert - OPTIONAL, REMOVE, YOU MIGHT HOST VCERT SOMEWHERE ELSE.
+# Downloads the latest release of vcert - OPTIONAL, YOU MIGHT HOST VCERT ELSEWHERE
 $apiUrl = "https://api.github.com/repos/Venafi/vcert/releases/latest"
 Log-Message "Fetching the latest release from $apiUrl"
 
-# Use Invoke-RestMethod to call the GitHub API - OTIONAL, REMOVE, YOU MIGHT HOST VCERT SOMEWHERE ELSE.
+# Use Invoke-RestMethod to call the GitHub API - OPTIONAL, YOU MIGHT HOST VCERT ELSEWHERE
 $latestRelease = Invoke-RestMethod -Uri $apiUrl
 Log-Message "Latest release information retrieved."
 
-# Attempt to find the Windows ZIP asset - OPTIONAL, PROVIDE HOST THE UNZIPED VCERT
+# Attempt to find the Windows ZIP asset - OPTIONAL, YOU MIGHT HOST VCERT ELSEWHERE
 $windowsZipAsset = $latestRelease.assets | Where-Object { $_.name -match "windows.*\.zip$" } | Select-Object -First 1
-
 if ($null -eq $windowsZipAsset) {
     Log-Message "Windows ZIP file not found in the latest release."
     exit
 }
 
-# Extract the download URL - OPTIONAL, PROVIDE HOST THE UNZIPED VCERT
+# Extract the download URL - OPTIONAL, YOU MIGHT HOST VCERT ELSEWHERE
 $windowsZipUrl = $windowsZipAsset.browser_download_url
 Log-Message "vcert ZIP download URL: $windowsZipUrl"
 
-# Define the path for the downloaded ZIP file - OPTIONAL, PROVIDE HOST THE UNZIPED VCERT
+# Define the path for the downloaded ZIP file - OPTIONAL, YOU MIGHT HOST VCERT ELSEWHERE
 $zipFilePath = Join-Path -Path $tempPath -ChildPath "vcert_latest_windows.zip"
 
-# Download the ZIP file - OPTIONAL, PROVIDE HOST THE UNZIPED VCERT
+# Download the ZIP file - OPTIONAL, YOU MIGHT HOST VCERT ELSEWHERE
 Invoke-WebRequest -Uri $windowsZipUrl -OutFile $zipFilePath
 Log-Message "ZIP file downloaded to $zipFilePath"
 
-# Extract the ZIP file directly to the temp directory, without subfolders - OPTIONAL, PROVIDE HOST THE UNZIPED VCERT
+# Extract the ZIP file directly to the temp directory, without subfolders - OPTIONAL, YOU MIGHT HOST VCERT ELSEWHERE
 Expand-Archive -LiteralPath $zipFilePath -DestinationPath $tempPath -Force
 Log-Message "vcert extracted to $tempPath"
 
+# prepare the vcert execution
 $vcertExePath = Join-Path -Path $tempPath -ChildPath "vcert.exe"
 Log-Message "==== Vcert ===="
 
