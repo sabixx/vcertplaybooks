@@ -4,14 +4,6 @@ param (
     [Parameter(Mandatory=$false)][string]$TLSPC_APIKEY
 )
 
-$tempPath = [System.IO.Path]::GetTempPath()
-$logFilePath = Join-Path -Path  "$tempPath" "vcert_schtask_setup_log.txt"
-
-# vcert taks to run on daily basis
-$scriptUrl = "https://raw.githubusercontent.com/sabixx/vcertplaybooks/main/vcert-task.ps1"
-
-$playBook = $TLSPC_PlaybookUrl.Split('/')[-1]
-
 # Function to append log messages with timestamps
 function Log-Message {
     param (
@@ -21,6 +13,14 @@ function Log-Message {
     Add-Content -Path $logFilePath -Value "[$timestamp] $Message"
     Write-Host $Message
 }
+
+$tempPath = [System.IO.Path]::GetTempPath()
+$logFilePath = Join-Path -Path  "$tempPath" "vcert_schtask_setup_log.txt"
+
+# vcert task to run on daily basis
+$scriptUrl = "https://raw.githubusercontent.com/sabixx/vcertplaybooks/main/vcert-task.ps1"
+
+$playBook = $TLSPC_PlaybookUrl.Split('/')[-1]
 
 # Check if the script is running with admin privileges
 if (-not ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")) {

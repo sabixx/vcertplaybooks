@@ -19,12 +19,6 @@ param (
     [Parameter(Mandatory=$true)][string]$playbook_url
 ) 
 
-$playBook = $playbook_url.Split('/')[-1]
-$tempPath = [System.IO.Path]::GetTempPath()
-$logFilePathDownload = Join-Path -Path  "$tempPath" "vcert_download_log.txt"
-$logFilePathRun = Join-Path -Path  "$tempPath" "vcert_run_log.txt"
-$playBookPath = Join-Path -Path $tempPath -ChildPath $playBook
-
 # Function to append log messages with timestamps - RECOMMENDED
 function Log-Message {
     param (
@@ -34,6 +28,11 @@ function Log-Message {
     Add-Content -Path $logFilePathDownload -Value "[$timestamp] $Message"
     Write-Host $Message
 }
+
+$tempPath = [System.IO.Path]::GettempPath()
+$logFilePathDownload = Join-Path -Path  "$tempPath" "vcert_download_log.txt"
+$logFilePathRun = Join-Path -Path  "$tempPath" "vcert_run_log.txt"
+$playBookPath = Join-Path -Path $tempPath -ChildPath $playBook
 
 Log-Message "==== Start ===="
 
@@ -54,8 +53,6 @@ Log-Message "vcert log file= $logFilePathRun"
 if (-not $playbook_url) {
     Log-Message "no playbook_url provided, exiting."
     exit
-} else {
-    Log-Message "using playbook_url = $playbook_url"
 }
 
 # Download the Playbook - RECOMMENDED
@@ -182,7 +179,7 @@ Log-Message "ZIP file downloaded to $zipFilePath"
 Expand-Archive -LiteralPath $zipFilePath -DestinationPath $tempPath -Force
 Log-Message "vcert extracted to $tempPath"
 
-# prepare the vcert execution
+# prepare the vcert execution  - REQUIRED
 $vcertExePath = Join-Path -Path $tempPath -ChildPath "vcert.exe"
 Log-Message "==== Vcert ===="
 
