@@ -75,10 +75,9 @@ $Env:TLSPC_APIKEY = 'xxxx'
 ```
 
 
-### Legacy suppoert
+### Legacy support
 
-To run on Windows Server 2016 and older it TLS 1.2 need to be confiured, before running
-It might requier additional changes
+To run on Windows Server 2016 and older it TLS 1.2 need to be configured, before running.
 ```
 # Set the Security Protocol to TLS 1.2
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
