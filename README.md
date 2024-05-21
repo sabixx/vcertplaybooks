@@ -54,7 +54,7 @@ $apiUrl = "https://api.github.com/repos/Venafi/vcert/releases/latest"
 **Modified Download VCert Section:**
 ```powershell
 # Fetch the VCert executable from the customer-hosted web server
-$vcertUrl = "https://webserver.yourdomain.com/path/to/vcert.zip"
+$vcertUrl = "https://developer.venafi.com/path/to/vcert.zip"
 $zipFilePath = Join-Path -Path $tempPath -ChildPath "vcert_latest_windows.zip"
 Invoke-WebRequest -Uri $vcertUrl -OutFile $zipFilePath
 ```
@@ -63,7 +63,7 @@ Invoke-WebRequest -Uri $vcertUrl -OutFile $zipFilePath
 
 **Original Script URL:**
 ```powershell
-$scriptUrl = "https://webserver.yourdomain.com/sabixx/vcertplaybooks/main/vcert-task.ps1"
+$scriptUrl = "https://developer.venafi.com/vcert-task.ps1"
 ```
 
 **Modified Script URL:**
@@ -88,7 +88,7 @@ $scriptUrl = "https://webserver.yourdomain.com/path/to/vcert-task.ps1"
    & { 
        $playbook_url = 'https://webserver.yourdomain.com/path/to/TLSPC_US_IIS.yaml'; 
        $scriptBlock = [scriptblock]::Create((New-Object System.Net.WebClient).DownloadString('https://webserver.yourdomain.com/path/to/vcert-task.ps1')); 
-       & $scriptBlock -playbook_url $playbook_url 
+       & $scriptBlock -playbook_url $playbook_url -TLSPC_APIKEY $TLSPC_APIKEY
    }
    ```
 
