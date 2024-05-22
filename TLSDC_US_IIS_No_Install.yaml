@@ -20,7 +20,6 @@ certificateTasks:
     installations:
       - format: CAPI
         capiLocation: 'LocalMachine\MY'
-        useLegacyP12: '{{ Env "useLegacyP12" "false" }}'
         capiFriendlyName: 'vCert Playbook - TLSDC_US_IIS_No_Install'
         capiIsNonExportable: True
         #afterInstallAction: Import-Module Webadministration; Get-WebBinding vcert_website | where {($_.protocol -eq "https")} | % {$_.addsslcertificate($Env:VCERT_IIS_THUMBPRINT, "My")}
