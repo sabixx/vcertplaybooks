@@ -1,0 +1,23 @@
+config:
+  connection:
+    platform: tpp
+    url: https://dc.tlsp.demo # URL to TPP instance
+    #trustBundle: /path/to/my/trustbundle.pem # Optional TrustBundle for TPP connection
+    credentials:
+      accessToken: '{{ Env "TPP_ACCESS_TOKEN" }}'
+      refreshToken: '{{ Env "TPP_REFRESH_TOKEN" }}'
+certificateTasks:
+  - name: IIS # Task Identifier, no relevance in tool run
+    renewBefore: 20%
+    setEnvVars: ["thumbprint"]
+    request:
+      csr: service
+      subject:
+        commonName: '{{ Env "TLSPC_Hostname" }}.mimdemo.com'
+      sanDNS: 
+        - '{{ Hostname | ToLower -}}.venafidemo.com'
+      zone: 'Certificates\vcert\IIS'
+    installations:
+      - format: PKCS12
+        file: 'c:\temp\cert.p12'
+        p12Password: "5uperSecr3t5!"
