@@ -8,9 +8,15 @@ certificateTasks:
     renewBefore: 20%
     setEnvVars: ["thumbprint"]
     request:
-      csr: service
+      csr: local
       subject:
         commonName: '{{ Env "TLSCP_Hostname" }}.venafidemo.com'
+        country: GB
+        locality: London
+        state: London
+        organization: Venafi
+        orgUnits:
+          - vcert
       sanDNS: 
         - '{{ Env "TLSCP_Hostname"}}.venafidemo.com'
         - '{{ Hostname | ToLower -}}.venafidemo.com'

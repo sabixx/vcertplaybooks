@@ -8,9 +8,15 @@ certificateTasks:
     renewBefore: 20%
     setEnvVars: ["thumbprint"]
     request:
-      csr: service
+      csr: local
       subject:
         commonName: '{{ Env "TLSPC_Hostname" }}.mimdemo.com'
+        country: GB
+        locality: London
+        state: London
+        organization: Venafi
+        orgUnits:
+          - vcert
       sanDNS: 
         - '{{ Hostname | ToLower -}}.venafidemo.com'
       zone: 'IIS pull\ztAllowAll'
