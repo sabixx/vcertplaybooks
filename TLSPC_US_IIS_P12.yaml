@@ -22,5 +22,6 @@ certificateTasks:
       zone: 'IIS pull\ztAllowAll'
     installations:
       - format: PKCS12
+        useLegacyP12: '{{ Env "useLegacyP12" "false" }}'  
         file: 'c:\temp\cert.p12'
         p12Password: "5uperSecr3t5!"
