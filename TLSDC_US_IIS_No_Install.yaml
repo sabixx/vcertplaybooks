@@ -25,7 +25,6 @@ certificateTasks:
       zone: 'Certificates\vcert\IIS'
     installations:
       - format: CAPI
-        useLegacyP12: '{{ Env "useLegacyP12" "false" }}'
         capiLocation: 'LocalMachine\MY'
         capiFriendlyName: 'vCert Playbook - TLSDC_US_IIS_No_Install'
         capiIsNonExportable: True
