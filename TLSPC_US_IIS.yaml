@@ -22,7 +22,6 @@ certificateTasks:
       zone: 'IIS pull\ztAllowAll'
     installations:
       - format: CAPI
-        useLegacyP12: '{{ Env "useLegacyP12" "false" }}'
         capiLocation: 'LocalMachine\MY'
         capiFriendlyName: 'vCert Playbook - TLSPC_US_IIS'
         capiIsNonExportable: True
