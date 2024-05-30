@@ -11,7 +11,7 @@ For other purposes other than demos the scripts should be modified to 'fit for p
 In order to setup a taks the follwoing command can be execute:
  
 
-# Create scheduled Taks:
+# Create a scheduled Taks:
 
 ### for IIS with a website called vcert_website and TLS PC use this:
 ## TLS PC
