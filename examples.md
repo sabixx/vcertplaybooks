@@ -26,7 +26,7 @@ In order to setup a taks the follwoing command can be execute:
 # with API key (will be set as an encrypted environment variable protected by the DPAPI key)
 ```
 & {
-    $TLSPC_hostname = 'website1';
+    $TLSPC_hostname = 'vcert_website';
     $TLSPC_PlaybookUrl = 'https://raw.githubusercontent.com/sabixx/vcertplaybooks/main/TLSPC_US_IIS.yaml';
     $TLSPC_APIKEY = 'xxx';
     $scriptBlock = [scriptblock]::Create((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/sabixx/vcertplaybooks/main/setup_vcert.ps1'));
@@ -36,7 +36,7 @@ In order to setup a taks the follwoing command can be execute:
 
 ```
 & {
-    $TLSPC_hostname = 'website1';
+    $TLSPC_hostname = 'vcert_website';
     $TLSPC_PlaybookUrl = 'https://raw.githubusercontent.com/sabixx/vcertplaybooks/main/TLSPC_US_IIS_P12.yaml';
     $TLSPC_APIKEY = 'xxx';
     $scriptBlock = [scriptblock]::Create((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/sabixx/vcertplaybooks/main/setup_vcert.ps1'));
@@ -47,7 +47,7 @@ In order to setup a taks the follwoing command can be execute:
 Windows Integrated Auth
 ```
 & {
-    $TLSPC_hostname = 'website1';
+    $TLSPC_hostname = 'vcert_website';
     $TLSPC_PlaybookUrl = 'https://raw.githubusercontent.com/sabixx/vcertplaybooks/main/TLSDC_US_IIS_No_Install.yaml';
     $scriptBlock = [scriptblock]::Create((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/sabixx/vcertplaybooks/main/setup_vcert.ps1'));
     & $scriptBlock -TLSPC_hostname $TLSPC_hostname -TLSPC_PlaybookUrl $TLSPC_PlaybookUrl

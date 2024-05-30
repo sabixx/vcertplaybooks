@@ -25,7 +25,8 @@ certificateTasks:
         capiLocation: 'LocalMachine\MY'
         capiFriendlyName: 'vCert Playbook - TLSPC_US_IIS'
         capiIsNonExportable: True
-        #creates bindings for the ports specifified and updates existing bindings.
-        afterInstallAction:  $siteName = "vcert_website"; $ports = @(443, 8443); $hostname = "*"; Import-Module WebAdministration; foreach ($port in $ports) { $bindingInfo = "*:${port}:${hostname}"; if (-not (Get-WebBinding -Name $siteName | Where-Object { $_.protocol -eq "https" -and $_.bindingInformation -eq $bindingInfo })) { New-WebBinding -Name $siteName -Protocol https -Port $port -IPAddress "*" -HostHeader $hostname -SslFlags 1 } }; Get-WebBinding -Name $siteName | Where-Object { $_.protocol -eq "https" } | ForEach-Object { $_.AddSslCertificate(${Env:VCERT_IIS_THUMBPRINT}, "My") }
+        #Creates bindings for the specified ports and updates existing bindings."
+        afterInstallAction:  $siteName = $Env:TLSPC_Hostname; $ports = @(443, 8443); $hostname = "*"; Import-Module WebAdministration; foreach ($port in $ports) { $bindingInfo = "*:${port}:${hostname}"; if (-not (Get-WebBinding -Name $siteName | Where-Object { $_.protocol -eq "https" -and $_.bindingInformation -eq $bindingInfo })) { New-WebBinding -Name $siteName -Protocol https -Port $port -IPAddress "*" -HostHeader $hostname -SslFlags 1 } }; Get-WebBinding -Name $siteName | Where-Object { $_.protocol -eq "https" } | ForEach-Object { $_.AddSslCertificate(${Env:VCERT_IIS_THUMBPRINT}, "My") } 
  
+
 
