@@ -190,7 +190,7 @@ Log-Message $command
 Invoke-Expression $command
 
 # Define command run vcert with playbook - REQUIRED 
-$command = '& ' + "$vcertExePath" + ' run -f ' + "$playBookPath" + ' -d 2>&1 | %{ "$_" } | Tee-Object -FilePath ' + "$logFilePathRun" + ' -Append'   
+$command = '& ' + "$vcertExePath" + ' run -d -f ' + "$playBookPath" + ' 2>&1 | %{ "$_" } | Tee-Object -FilePath ' + "$logFilePathRun" + ' -Append'   
 Log-Message $command
 
 # Execute vcert
