@@ -18,8 +18,7 @@ certificateTasks:
         locality: London
         state: London
         organization: Venafi
-        orgUnits:
-          - vcert
+        orgUnits: [vcert]
       sanDNS: 
         - '{{ Hostname | ToLower -}}.venafidemo.com'
       zone: 'Certificates\vcert\IIS'
