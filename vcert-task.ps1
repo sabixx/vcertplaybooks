@@ -124,10 +124,10 @@ switch ($platform) {
 #####################################################################################################################
 
     'vaas' {      
-        if ([Environment]::GetEnvironmentVariable("TLSPC_APIKEY", User) Log-Message "APIKEY found in user world"
-        if ([Environment]::GetEnvironmentVariable("TLSPC_APIKEY", Proces) Log-Message "APIKEY found in process world"
-        if ((-not [Environment]::GetEnvironmentVariable("TLSPC_APIKEY", User)) && (-not [Environment]::GetEnvironmentVariable("TLSPC_APIKEY", Process)) ) 
-            if ([Environment]::GetEnvironmentVariable("TLSPC_APIKEY_$playBook", "Machine")) {
+        if ([Environment]::GetEnvironmentVariable("TLSPC_APIKEY", "User")) { Log-Message "APIKEY found in user world" }
+        if ([Environment]::GetEnvironmentVariable("TLSPC_APIKEY", "Proces")){ Log-Message "APIKEY found in process world" }
+        if (-not [string]::IsNullOrEmpty([Environment]::GetEnvironmentVariable("TLSPC_APIKEY", "User")) -and -not [string]::IsNullOrEmpty([Environment]::GetEnvironmentVariable("TLSPC_APIKEY", "Process"))) {
+        if ([Environment]::GetEnvironmentVariable("TLSPC_APIKEY_$playBook", "Machine")) {
                 try {
                     Add-Type -AssemblyName System.Security
                     $encryptedBase64 = ([Environment]::GetEnvironmentVariable("TLSPC_APIKEY_$playBook", "Machine"))
