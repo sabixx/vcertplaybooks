@@ -123,18 +123,22 @@ switch ($platform) {
 ################################ Replace with function determine API Key at runtime #################################
 #####################################################################################################################
 
-    'vaas' {
-        if ([Environment]::GetEnvironmentVariable("TLSPC_APIKEY_$playBook", "Machine")) {
-            try {
-                Add-Type -AssemblyName System.Security
-                $encryptedBase64 = ([Environment]::GetEnvironmentVariable("TLSPC_APIKEY_$playBook", "Machine"))
-                $SecureStr = [System.Convert]::FromBase64String($encryptedBase64) 
-                $bytes = [Security.Cryptography.ProtectedData]::Unprotect($SecureStr, $null, [Security.Cryptography.DataProtectionScope]::LocalMachine)
-                $Env:TLSPC_APIKEY = [System.Text.Encoding]::Unicode.GetString($bytes) 
-                Log-Message "retrieved TLSPC_APIKEY."  
-            }
-            catch {
-                Log-Message "An error occurred retrieving TLSPC_APIKEY: $($_.Exception.Message)"
+    'vaas' {      
+        if ([Environment]::GetEnvironmentVariable("TLSPC_APIKEY", User) Log-Message "APIKEY found in user world"
+        if ([Environment]::GetEnvironmentVariable("TLSPC_APIKEY", Proces) Log-Message "APIKEY found in process world"
+        if ((-not [Environment]::GetEnvironmentVariable("TLSPC_APIKEY", User)) && (-not [Environment]::GetEnvironmentVariable("TLSPC_APIKEY", Process)) ) 
+            if ([Environment]::GetEnvironmentVariable("TLSPC_APIKEY_$playBook", "Machine")) {
+                try {
+                    Add-Type -AssemblyName System.Security
+                    $encryptedBase64 = ([Environment]::GetEnvironmentVariable("TLSPC_APIKEY_$playBook", "Machine"))
+                    $SecureStr = [System.Convert]::FromBase64String($encryptedBase64) 
+                    $bytes = [Security.Cryptography.ProtectedData]::Unprotect($SecureStr, $null, [Security.Cryptography.DataProtectionScope]::LocalMachine)
+                    $Env:TLSPC_APIKEY = [System.Text.Encoding]::Unicode.GetString($bytes) 
+                    Log-Message "retrieved TLSPC_APIKEY."  
+                }
+                catch {
+                    Log-Message "An error occurred retrieving TLSPC_APIKEY: $($_.Exception.Message)"
+                }
             }
         }
 
