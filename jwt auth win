@@ -1,0 +1,43 @@
+ ###############################################################
+
+##   Retrieve JWT from ID                                     ##
+
+###############################################################
+
+ 
+
+$body = @{
+
+    scope         = "certificates:request"
+ 
+    audience      = "https://api.venafi.cloud/"
+ 
+    client_id     = "ZwkLAcWEE2gwz7ntpmlD76gQFhHXNVPP"
+ 
+    client_secret = "L6Igh-Sc4Vrzk6bQEEZF8Ddl_EXKvBzww8XWS3mR8bOf6nUlcQleKqNaNbzyw8xn"
+ 
+    grant_type    = "client_credentials"
+ 
+ }
+ 
+  
+ 
+ # Corrected URL for Auth0 token request
+ 
+ $response = Invoke-RestMethod -Uri "https://dev-opv4np2n306var5k.us.auth0.com/oauth/token" -Body $body -ContentType "application/x-www-form-urlencoded" -Method Post
+ 
+  
+ 
+ ###############################################################
+ 
+ ##   set API environment variable so that vcert can use it.   ##
+ 
+ ###############################################################
+ 
+  
+ 
+ $Env:TLSPC_TOKEN_URL = "<TLSPC API TOKEN URL HERE if not entered in playbook>"
+ 
+ $Env:TLSPC_EXTERNAL_JWT = $response.access_token
+ 
+ 
