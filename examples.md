@@ -86,7 +86,7 @@ $TLSPC_hostname = 'vcert_website';
 $TLSPC_PlaybookUrl = 'https://raw.githubusercontent.com/sabixx/vcertplaybooks/main/TLSPC_US_IIS_ServiceAccount.yaml';
 $TLSPC_APIKEY = 'xxx';
 
-& { $scriptBlock = [scriptblock]::Create((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/sabixx/vcertplaybooks/main/vcert-task.ps1')); & $scriptBlock -playbook_url $playbook_url -TLSPC_OAuthIdpURL $$TLSPC_OAuthIdpURL -TLSPC_tokenURL $TLSPC_tokenURL -TLSPC_ClientID $TLSPC_ClientID -TLSPC_ClientSecret $TLSPC_ClientSecret
+& { $scriptBlock = [scriptblock]::Create((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/sabixx/vcertplaybooks/main/vcert-task.ps1')); & $scriptBlock -playbook_url $playbook_url -TLSPC_OAuthIdpURL $TLSPC_OAuthIdpURL -TLSPC_tokenURL $TLSPC_tokenURL -TLSPC_ClientID $TLSPC_ClientID -TLSPC_ClientSecret $TLSPC_ClientSecret
 }
 ```
 

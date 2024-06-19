@@ -86,7 +86,7 @@ switch ($platform) {
 #####################################################################################################################
 ################################ # TLSDC with windows Integrated Auth ###############################################
 #####################################################################################################################
-    'tpp' -or 'tlsdc' {
+    'tpp', 'tlsdc' {
         try {
             $TPPurl = switch -regex (Get-Content "$playBookPath") {'url:'{"$_"} }
             $TPPurl = $TPPurl -replace 'url:', ''
@@ -123,7 +123,7 @@ switch ($platform) {
 ################################## TLS PC with ServiceAccount JWT authentication  ###################################
 #####################################################################################################################
 
-    'vaas'  -or 'tlspc' {  
+    'vaas', 'tlspc' {  
         
         # Set $TLSPC_CLIENTID as an environment variable for the current process only - OPTIONAL
         if ( [Environment]::GetEnvironmentVariable("TLSPC_CLIENTID_$playBook", "Machine")) {
