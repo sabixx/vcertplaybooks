@@ -83,9 +83,11 @@ Log-Message "retrieved TLSPC_hostname = $Env:TLSPC_Hostname"
 
 # Perform authentication based on Platorm - CHANGE, BEST TO MAKE IT FIT FOR PURPOOSE
 switch ($platform) {
+
 #####################################################################################################################
 ################################ # TLSDC with windows Integrated Auth ###############################################
 #####################################################################################################################
+    
     {($_ -eq "tlsdc") -or ($_ -eq "tpp")} {
         try {
             $TPPurl = switch -regex (Get-Content "$playBookPath") {'url:'{"$_"} }
