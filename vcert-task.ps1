@@ -1,4 +1,4 @@
-# This demo shows some options how vcert can be run. 
+ # This demo shows some options how vcert can be run. 
 # The script performs several taks such downloading the 
 # latest version of vcert and playbook. It's performing
 # authentication based on the platform of the playbook.
@@ -15,8 +15,13 @@
 #
 
 param (
-    [Parameter(Mandatory=$true)][string]$playbook_url
+    [Parameter(Mandatory=$true)][string]$playbook_url,
+    [Parameter(Mandatory=$false)][string]$TLSPC_OAuthIdpURL,
+    [Parameter(Mandatory=$false)][string]$TLSPC_tokenURL,
+    [Parameter(Mandatory=$false)][string]$TLSPC_ClientID,
+    [Parameter(Mandatory=$false)][string]$TLSPC_ClientSecret
 ) 
+
 
 # Function to append log messages with timestamps - RECOMMENDED
 function Log-Message {
@@ -36,12 +41,22 @@ $playBookPath = Join-Path -Path $tempPath -ChildPath $playBook
 
 Log-Message "==== Start ===="
 
-Log-Message "playbook_url  = $playbook_url"
-Log-Message "playbook      = $playBook"
-Log-Message "playbook path = $playBookPath"
-Log-Message "tempPath      = $tempPath"
-Log-Message "task log file = $logFilePathDownload"
-Log-Message "vcert log file= $logFilePathRun"
+Log-Message "playbook_url      = $playbook_url"
+Log-Message "playbook          = $playBook"
+Log-Message "playbook path     = $playBookPath"
+Log-Message "tempPath          = $tempPath"
+Log-Message "task log file     = $logFilePathDownload"
+Log-Message "vcert log file    = $logFilePathRun"
+Log-Message "playbook_url      = $playbook_url"
+Log-Message "playbook          = $playBook"
+Log-Message "playbook path     = $playBookPath"
+Log-Message "tempPath          = $tempPath"
+Log-Message "task log file     = $logFilePathDownload"
+Log-Message "vcert log file    = $logFilePathRun"
+Log-Message "TLSPC_OAuthIdpURL = $TLSPC_OAuthIdpURL"
+Log-Message "TLSPC_tokenURL    = $TLSPC_tokenURL"
+Log-Message "TLSPC_ClientID    = $TLSPC_ClientID"
+
 
  # Check if the script is running with admin privileges - OPTINAL DEPENDS ON USE CASE
  if (-not ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")) {
@@ -83,12 +98,10 @@ Log-Message "retrieved TLSPC_hostname = $Env:TLSPC_Hostname"
 
 # Perform authentication based on Platorm - CHANGE, BEST TO MAKE IT FIT FOR PURPOOSE
 switch ($platform) {
-
 #####################################################################################################################
 ################################ # TLSDC with windows Integrated Auth ###############################################
 #####################################################################################################################
-    
-    {($_ -eq "tlsdc") -or ($_ -eq "tpp")} {
+    {($_ -eq "tlsdc") -or ($_ -eq "tppp")} {
         try {
             $TPPurl = switch -regex (Get-Content "$playBookPath") {'url:'{"$_"} }
             $TPPurl = $TPPurl -replace 'url:', ''
@@ -125,7 +138,7 @@ switch ($platform) {
 ################################## TLS PC with ServiceAccount JWT authentication  ###################################
 #####################################################################################################################
 
-    {($_ -eq "tlspc") -or ($_ -eq "vaas")} { 
+     {($_ -eq "tlspc") -or ($_ -eq "vaas")} {  
         
         # Set $TLSPC_CLIENTID as an environment variable for the current process only - OPTIONAL
         if ( [Environment]::GetEnvironmentVariable("TLSPC_CLIENTID_$playBook", "Machine")) {
@@ -170,25 +183,19 @@ switch ($platform) {
         $jsonPayload = @{
             client_id     = $TLSPC_CLIENTID
             client_secret = $TLSPC_ClientSecret
-            audience      = $audience
-            grant_type    = $grant_type
+            audience      = "https://api.venafi.cloud/"
+            grant_type    = "client_credentials"
         } | ConvertTo-Json
 
         $response = Invoke-RestMethod -Method Post -Uri $TLSPC_OAuthIdpURL -ContentType "application/json" -Body $jsonPayload
 
-        $access_token = $response.access_token
-
         $env:TLSPC_ExternalJWT = $response.access_token
 
-        $output = @{
-            external_jwt = $access_token
-        } | ConvertTo-Json
+#####################################################################################################################
+#####################################   it's not recommneded using API Keys... ######################################
+#####################################   this only exists for older clients..   ######################################
+#####################################################################################################################
 
-        Log-Message $output
-
-
-        #### it's not recommneded using API Keys... use IDP oAuth instead
-        ### this only exists for older clients.. 
         if ([Environment]::GetEnvironmentVariable("TLSPC_APIKEY", "User")) { Log-Message "APIKEY found in user world" }
         if ([Environment]::GetEnvironmentVariable("TLSPC_APIKEY", "Proces")){ Log-Message "APIKEY found in process world" }
         if (-not [string]::IsNullOrEmpty([Environment]::GetEnvironmentVariable("TLSPC_APIKEY", "User")) -and -not [string]::IsNullOrEmpty([Environment]::GetEnvironmentVariable("TLSPC_APIKEY", "Process"))) {
@@ -210,6 +217,7 @@ switch ($platform) {
         if (-not $Env:TLSPC_APIKEY) {
             Log-Message "no TLSPC_APIKEY set, recommended"
         }
+    }
 
     default {
         Log-Message "Unsupported platform: $platform"
@@ -284,4 +292,4 @@ switch ($platform) {
         }
     }
 
-
+ 
