@@ -14,7 +14,6 @@
 # (C) 2024 Jens Sabitzer jens.sabitzer@venafi.com
 #
 
-
 param (
     [Parameter(Mandatory=$true)][string]$playbook_url
 ) 
@@ -80,13 +79,14 @@ Log-Message "no TLSPC_hostname_$playBook set, using ::GetHostName."
 $Env:TLSPC_Hostname = [System.Environment]::GetEnvironmentVariable("TLSPC_Hostname_$playBook",'Machine')
 Log-Message "retrieved TLSPC_hostname = $Env:TLSPC_Hostname"
 }
+    
 
 # Perform authentication based on Platorm - CHANGE, BEST TO MAKE IT FIT FOR PURPOOSE
 switch ($platform) {
 #####################################################################################################################
 ################################ # TLSDC with windows Integrated Auth ###############################################
 #####################################################################################################################
-    'tpp' {
+    'tpp' -or 'tlsdc' {
         try {
             $TPPurl = switch -regex (Get-Content "$playBookPath") {'url:'{"$_"} }
             $TPPurl = $TPPurl -replace 'url:', ''
@@ -120,10 +120,73 @@ switch ($platform) {
     }
 
 #####################################################################################################################
-################################ Replace with function determine API Key at runtime #################################
+################################## TLS PC with ServiceAccount JWT authentication  ###################################
 #####################################################################################################################
 
-    'vaas' {      
+    'vaas'  -or 'tlspc' {  
+        
+        # Set $TLSPC_CLIENTID as an environment variable for the current process only - OPTIONAL
+        if ( [Environment]::GetEnvironmentVariable("TLSPC_CLIENTID_$playBook", "Machine")) {
+            $TLSPC_CLIENTID = [System.Environment]::GetEnvironmentVariable("TLSPC_CLIENTID_$playBook",'Machine')
+            Log-Message "retrieved TLSPC_CLIENTID = $TLSPC_CLIENTID"
+        } else { Log-Message "No TLSPC_CLIENTID" }
+
+        # Set $TLSPC_tokenURL as an environment variable for the current process only - OPTIONAL
+        if ( [Environment]::GetEnvironmentVariable("TLSPC_TOKENURL_$playBook", "Machine")) {
+            $TLSPC_tokenURL = [System.Environment]::GetEnvironmentVariable("TLSPC_TOKENURL_$playBook",'Machine')
+            Log-Message "retrieved TLSPC_TOKENURL_ = $TLSPC_tokenURL"
+        } else { Log-Message "No TLSPC_TOKENURL" }
+
+        # Set $TLSPC_OAuthIdpURL as an environment variable for the current process only - OPTIONAL
+        if ( [Environment]::GetEnvironmentVariable("TLSPC_OAUTHIDPURL_$playBook", "Machine")) {
+            $TLSPC_OAuthIdpURL = [System.Environment]::GetEnvironmentVariable("TLSPC_OAUTHIDPURL_$playBook",'Machine')
+            Log-Message "retrieved TLSPC_OAUTHIDPURL_ = $TLSPC_OAuthIdpURL"
+        } else { Log-Message "No TLSPC_OAuthIdpURL" }
+
+        if (-not [string]::IsNullOrEmpty([Environment]::GetEnvironmentVariable("TLSPC_CLIENTSECRET", "User")) -and -not [string]::IsNullOrEmpty([Environment]::GetEnvironmentVariable("TLSPC_CLIENTSECRET", "Process"))) {
+        if ([Environment]::GetEnvironmentVariable("TLSPC_CLIENTSECRET_$playBook", "Machine")) {
+                try {
+                    Add-Type -AssemblyName System.Security
+                    $encryptedBase64 = ([Environment]::GetEnvironmentVariable("TLSPC_CLIENTSECRET_$playBook", "Machine"))
+                    $SecureStr = [System.Convert]::FromBase64String($encryptedBase64) 
+                    $bytes = [Security.Cryptography.ProtectedData]::Unprotect($SecureStr, $null, [Security.Cryptography.DataProtectionScope]::LocalMachine)
+                    $TLSPC_ClientSecret = [System.Text.Encoding]::Unicode.GetString($bytes) 
+                    Log-Message "retrieved TLSPC_CLIENTSECRET."  
+                }
+                catch {
+                    Log-Message "An error occurred retrieving TLSPC_CLIENTSECRET: $($_.Exception.Message)"
+                }
+            }
+        }
+
+        if (-not $TLSPC_ClientSecret) {
+            Log-Message "no TLSPC_CLIENTSECRET set, exiting."
+            exit
+        }
+
+        # Create the JSON payload
+        $jsonPayload = @{
+            client_id     = $TLSPC_CLIENTID
+            client_secret = $TLSPC_ClientSecret
+            audience      = $audience
+            grant_type    = $grant_type
+        } | ConvertTo-Json
+
+        $response = Invoke-RestMethod -Method Post -Uri $TLSPC_OAuthIdpURL -ContentType "application/json" -Body $jsonPayload
+
+        $access_token = $response.access_token
+
+        $env:TLSPC_ExternalJWT = $response.access_token
+
+        $output = @{
+            external_jwt = $access_token
+        } | ConvertTo-Json
+
+        Log-Message $output
+
+
+        #### it's not recommneded using API Keys... use IDP oAuth instead
+        ### this only exists for older clients.. 
         if ([Environment]::GetEnvironmentVariable("TLSPC_APIKEY", "User")) { Log-Message "APIKEY found in user world" }
         if ([Environment]::GetEnvironmentVariable("TLSPC_APIKEY", "Proces")){ Log-Message "APIKEY found in process world" }
         if (-not [string]::IsNullOrEmpty([Environment]::GetEnvironmentVariable("TLSPC_APIKEY", "User")) -and -not [string]::IsNullOrEmpty([Environment]::GetEnvironmentVariable("TLSPC_APIKEY", "Process"))) {
@@ -134,7 +197,7 @@ switch ($platform) {
                     $SecureStr = [System.Convert]::FromBase64String($encryptedBase64) 
                     $bytes = [Security.Cryptography.ProtectedData]::Unprotect($SecureStr, $null, [Security.Cryptography.DataProtectionScope]::LocalMachine)
                     $Env:TLSPC_APIKEY = [System.Text.Encoding]::Unicode.GetString($bytes) 
-                    Log-Message "retrieved TLSPC_APIKEY."  
+                    Log-Message "retrieved TLSPC_APIKEY, IT's NOT RECOMMENDED TO USE API KEYS, USE SERVICE ACCOUNTS INSTEAD"  
                 }
                 catch {
                     Log-Message "An error occurred retrieving TLSPC_APIKEY: $($_.Exception.Message)"
@@ -143,10 +206,8 @@ switch ($platform) {
         }
 
         if (-not $Env:TLSPC_APIKEY) {
-            Log-Message "no TLSPC_APIKEY set, exiting."
-            exit
+            Log-Message "no TLSPC_APIKEY set, recommended"
         }
-    }
 
     default {
         Log-Message "Unsupported platform: $platform"

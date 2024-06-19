@@ -1,7 +1,10 @@
 param (
     [Parameter(Mandatory=$false)][string]$TLSPC_Hostname,
     [Parameter(Mandatory=$true)][string]$TLSPC_PlaybookUrl, 
-    [Parameter(Mandatory=$false)][string]$TLSPC_APIKEY
+    [Parameter(Mandatory=$false)][string]$TLSPC_OAuthIdpURL,
+    [Parameter(Mandatory=$false)][string]$TLSPC_tokenURL,
+    [Parameter(Mandatory=$false)][string]$TLSPC_ClientID,
+    [Parameter(Mandatory=$false)][string]$TLSPC_ClientSecret
 )
 
 # Function to append log messages with timestamps
@@ -34,8 +37,7 @@ Log-Message "playBook          = $playBook"
 Log-Message "tempPath          = $tempPath"
 Log-Message "scriptUrl         = $scriptUrl"
 Log-Message "TLSPC_Hostname    = $TLSPC_Hostname"
-if ($TLSPC_APIKEY) { Log-Message "TLSPC_APIKEY      = Fd93-xxxx" }
-else { Log-Message "TLSPC_APIKEY / TPP_ACCESS_TOKEN = not set, recommended" }
+if ($TLSPC_CLIENTSECRET) { Log-Message "TLSPC_CLIENTSECRET      = Fd93-xxxx" }
 
 # Creating the temporary environment variables in the process
 if ("TLSPC_Hostname") {
@@ -43,23 +45,31 @@ if ("TLSPC_Hostname") {
      Log-Message "Sucessfully set TLSPC_Hostname_$playBook" 
 }
 
-#####################################################################################################################
-################################## It is recommended determine API key at runtime! ##################################
-#####################################################################################################################
-
-if ("$TLSPC_APIKEY") {
-    Log-Message "It is not recommended to provide the API Key with the setup. Instead leverage vcert-task to determine API key at runtime!"    
-    Add-Type -AssemblyName System.Security
-    $bytes = [System.Text.Encoding]::Unicode.GetBytes($TLSPC_APIKEY)
-    $SecureStr = [Security.Cryptography.ProtectedData]::Protect($bytes, $null, [Security.Cryptography.DataProtectionScope]::LocalMachine)
-    $SecureStrBase64 = [System.Convert]::ToBase64String($SecureStr)
-    [Environment]::SetEnvironmentVariable("TLSPC_APIKEY_$playBook",$SecureStrBase64, "Machine")  
-} else {
-    Log-Message "TLSPC_APIKEY / TPP_ACCESS_TOKEN determined during runtime." 
+if ("TLSPC_ClientId") {
+    [Environment]::SetEnvironmentVariable("TLSPC_CLIENTID_$playBook",$TLSPC_CLIENTID, "Machine")
+    Log-Message "Sucessfully set TLSPC_CLIENTID_$playBook" 
 }
 
-#####################################################################################################################
-#####################################################################################################################
+if ("TLSPC_tokenURL") {
+    [Environment]::SetEnvironmentVariable("TLSPC_TOKENURL_$playBook",$TLSPC_tokenURL, "Machine")
+    Log-Message "Sucessfully set TLSPC_TOKENURL_$playBook" 
+}
+
+if ("TLSPC_OAuthIdpURL") {
+    [Environment]::SetEnvironmentVariable("TLSPC_OAUTHIDPURL_$playBook",$TLSPC_OAuthIdpURL, "Machine")
+    Log-Message "Sucessfully set TLSPC_OAuthIdpURL_$playBook" 
+}
+
+if ("$TLSPC_ClientSecret") {
+    Add-Type -AssemblyName System.Security
+    $bytes = [System.Text.Encoding]::Unicode.GetBytes($TLSPC_ClientSecret)
+    $SecureStr = [Security.Cryptography.ProtectedData]::Protect($bytes, $null, [Security.Cryptography.DataProtectionScope]::LocalMachine)
+    $SecureStrBase64 = [System.Convert]::ToBase64String($SecureStr)
+    [Environment]::SetEnvironmentVariable("TLSPC_CLIENTSECRET_$playBook",$SecureStrBase64, "Machine") 
+    Log-Message "TLSPC_CLIENTSECRET_$playBook set."     
+} else {
+    Log-Message "TLSPC_CLIENTSECRET determined during runtime." 
+}
 
 # Generate a random hour and minute for the task to run
 $randomHour = Get-Random -Minimum 8 -Maximum 10
@@ -80,4 +90,3 @@ $principal = New-ScheduledTaskPrincipal -UserId "SYSTEM" -LogonType ServiceAccou
 $taskName = "vcert - $playBook"
 Register-ScheduledTask -TaskName $taskName -Action $action -Trigger $trigger -Principal $principal -Description "runs the vcert playbook, checks certificates(s) and performs renewal when necessary"
 Log-Message "Created task succesfully: vcert - $playBook"
-
