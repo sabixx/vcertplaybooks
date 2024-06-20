@@ -40,12 +40,13 @@ $playBookPath = Join-Path -Path $tempPath -ChildPath $playBook
 
 Log-Message "==== Start ===="
 
-Log-Message "playbook_url      = $playbook_url"
-Log-Message "playbook          = $playBook"
-Log-Message "playbook path     = $playBookPath"
-Log-Message "tempPath          = $tempPath"
-Log-Message "task log file     = $logFilePathDownload"
-Log-Message "vcert log file    = $logFilePathRun"
+Log-Message "playbook_url  = $playbook_url"
+Log-Message "playbook      = $playBook"
+Log-Message "playbook path = $playBookPath"
+Log-Message "tempPath      = $tempPath"
+Log-Message "task log file = $logFilePathDownload"
+Log-Message "vcert log file= $logFilePathRun"
+
 Log-Message "playbook_url      = $playbook_url"
 Log-Message "playbook          = $playBook"
 Log-Message "playbook path     = $playBookPath"
@@ -55,7 +56,6 @@ Log-Message "vcert log file    = $logFilePathRun"
 Log-Message "TLSPC_OAuthIdpURL = $TLSPC_OAuthIdpURL"
 Log-Message "TLSPC_tokenURL    = $TLSPC_tokenURL"
 Log-Message "TLSPC_ClientID    = $TLSPC_ClientID"
-
 
  # Check if the script is running with admin privileges - OPTINAL DEPENDS ON USE CASE
  if (-not ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")) {
@@ -80,27 +80,25 @@ try {
     $platform = ($platform.Split("#"))[0].Trim()
     $platform = $platform -replace '[^a-zA-Z0-9]', '' 
     Log-Message "Platform = $platform"  
-}  
-catch {
+} catch {
     Log-Message "could not determine platform."
 }
 
 # Set $TLSPC_Hostname as an environment variable for the current process only - OPTIONAL
 if (-not [Environment]::GetEnvironmentVariable("TLSPC_Hostname_$playBook", "Machine")) {
-Log-Message "no TLSPC_hostname_$playBook set, using ::GetHostName."
-[Environment]::SetEnvironmentVariable("TLSPC_Hostname", [System.Net.Dns]::GetHostName(), "Process")
+    [Environment]::SetEnvironmentVariable("TLSPC_Hostname", [System.Net.Dns]::GetHostName(), "Process")
+    Log-Message "no TLSPC_hostname_$playBook set, using ::GetHostName = $Env:TLSPC_Hostname"
 } else {
-$Env:TLSPC_Hostname = [System.Environment]::GetEnvironmentVariable("TLSPC_Hostname_$playBook",'Machine')
-Log-Message "retrieved TLSPC_hostname = $Env:TLSPC_Hostname"
+    $Env:TLSPC_Hostname = [System.Environment]::GetEnvironmentVariable("TLSPC_Hostname_$playBook",'Machine')
+    Log-Message "retrieved TLSPC_hostname = $Env:TLSPC_Hostname"
 }
-    
 
 # Perform authentication based on Platorm - CHANGE, BEST TO MAKE IT FIT FOR PURPOOSE
 switch ($platform) {
 #####################################################################################################################
 ################################ # TLSDC with windows Integrated Auth ###############################################
 #####################################################################################################################
-    {($_ -eq "tlsdc") -or ($_ -eq "tppp")} {
+    {($_ -eq "tlsdc") -or ($_ -eq "tpp")} {
         try {
             $TPPurl = switch -regex (Get-Content "$playBookPath") {'url:'{"$_"} }
             $TPPurl = $TPPurl -replace 'url:', ''
@@ -115,7 +113,6 @@ switch ($platform) {
                 $client_id = ($client_id.Split("#"))[0].Trim()
             }
             Log-Message "client_id = $client_id" 
-
             $response_grant = Invoke-RestMethod "$TPPUrl/vedauth/authorize/integrated" -UseDefaultCredentials -Method POST -Body (@{"client_id"="$client_id"; "scope"="certificate:manage"} | ConvertTo-Json) -ContentType "application/json" -UseBasicParsing
             $env:TPP_ACCESS_TOKEN = $response_grant.access_token
             $env:TPP_REFRESH_TOKEN = $response_grant.refresh_token
@@ -148,6 +145,8 @@ switch ($platform) {
         # Set $TLSPC_tokenURL as an environment variable for the current process only - OPTIONAL
         if ( [Environment]::GetEnvironmentVariable("TLSPC_TOKENURL_$playBook", "Machine")) {
             $TLSPC_tokenURL = [System.Environment]::GetEnvironmentVariable("TLSPC_TOKENURL_$playBook",'Machine')
+            # setting token_url as environment variable as playbook requiers it
+            $Env:TLSPC_tokenURL = $TLSPC_tokenURL
             Log-Message "retrieved TLSPC_TOKENURL_ = $TLSPC_tokenURL"
         } else { Log-Message "No TLSPC_TOKENURL" }
 
@@ -157,14 +156,23 @@ switch ($platform) {
             Log-Message "retrieved TLSPC_OAUTHIDPURL_ = $TLSPC_OAuthIdpURL"
         } else { Log-Message "No TLSPC_OAuthIdpURL" }
 
+        # take out, should be too short to stay in memory, alywas get a new client secret...
+        #if ([Environment]::GetEnvironmentVariable("TLSPC_CLIENTSECRET", "User")) { Log-Message "TLSPC_CLIENTSECRET found in user world" }
+        #if ([Environment]::GetEnvironmentVariable("TLSPC_CLIENTSECRET", "Proces")){ Log-Message "TLSPC_CLIENTSECRET found in process world" }
+
         if (-not [string]::IsNullOrEmpty([Environment]::GetEnvironmentVariable("TLSPC_CLIENTSECRET", "User")) -and -not [string]::IsNullOrEmpty([Environment]::GetEnvironmentVariable("TLSPC_CLIENTSECRET", "Process"))) {
-        if ([Environment]::GetEnvironmentVariable("TLSPC_CLIENTSECRET_$playBook", "Machine")) {
+            if ([Environment]::GetEnvironmentVariable("TLSPC_CLIENTSECRET_$playBook", "Machine")) {
+                Log-Message("getting the secret")
                 try {
                     Add-Type -AssemblyName System.Security
                     $encryptedBase64 = ([Environment]::GetEnvironmentVariable("TLSPC_CLIENTSECRET_$playBook", "Machine"))
+                    Log-Message ("encryptedBase64 = $encryptedBase64")
                     $SecureStr = [System.Convert]::FromBase64String($encryptedBase64) 
+                    Log-Message ("SecureStr = $SecureStr")
                     $bytes = [Security.Cryptography.ProtectedData]::Unprotect($SecureStr, $null, [Security.Cryptography.DataProtectionScope]::LocalMachine)
+                    Log-Message ("bytes = $bytes")
                     $TLSPC_ClientSecret = [System.Text.Encoding]::Unicode.GetString($bytes) 
+                    Log-Message ("TLSPC_ClientSecret_decoded = $TLSPC_ClientSecret")
                     Log-Message "retrieved TLSPC_CLIENTSECRET."  
                 }
                 catch {
@@ -187,18 +195,18 @@ switch ($platform) {
         } | ConvertTo-Json
 
         $response = Invoke-RestMethod -Method Post -Uri $TLSPC_OAuthIdpURL -ContentType "application/json" -Body $jsonPayload
-
         $env:TLSPC_ExternalJWT = $response.access_token
-
-#####################################################################################################################
-#####################################   it's not recommneded using API Keys... ######################################
-#####################################   this only exists for older clients..   ######################################
-#####################################################################################################################
+        Log-Message("TLSPC_ExternalJWT = $env:TLSPC_ExternalJWT")
+        
+        #####################################################################################################################
+        #####################################   it's not recommneded using API Keys... ######################################
+        #####################################   this only exists for older clients..   ######################################
+        #####################################################################################################################
 
         if ([Environment]::GetEnvironmentVariable("TLSPC_APIKEY", "User")) { Log-Message "APIKEY found in user world" }
         if ([Environment]::GetEnvironmentVariable("TLSPC_APIKEY", "Proces")){ Log-Message "APIKEY found in process world" }
         if (-not [string]::IsNullOrEmpty([Environment]::GetEnvironmentVariable("TLSPC_APIKEY", "User")) -and -not [string]::IsNullOrEmpty([Environment]::GetEnvironmentVariable("TLSPC_APIKEY", "Process"))) {
-        if ([Environment]::GetEnvironmentVariable("TLSPC_APIKEY_$playBook", "Machine")) {
+            if ([Environment]::GetEnvironmentVariable("TLSPC_APIKEY_$playBook", "Machine")) {
                 try {
                     Add-Type -AssemblyName System.Security
                     $encryptedBase64 = ([Environment]::GetEnvironmentVariable("TLSPC_APIKEY_$playBook", "Machine"))
@@ -209,12 +217,13 @@ switch ($platform) {
                 }
                 catch {
                     Log-Message "An error occurred retrieving TLSPC_APIKEY: $($_.Exception.Message)"
-                }
+                }  
             }
-        }
 
-        if (-not $Env:TLSPC_APIKEY) {
-            Log-Message "no TLSPC_APIKEY set, recommended"
+            if (-not $Env:TLSPC_APIKEY) {
+                Log-Message "no TLSPC_APIKEY set, recommended"
+            }   
+        
         }
     }
 
@@ -223,6 +232,7 @@ switch ($platform) {
         exit
     }
 }
+
 
 # Downloads the latest release of vcert - OPTIONAL, YOU MIGHT HOST VCERT ELSEWHERE
 $apiUrl = "https://api.github.com/repos/Venafi/vcert/releases/latest"
@@ -271,24 +281,21 @@ Log-Message $command
 Invoke-Expression $command
 
 # Revoke Grant - HIGHLY RECOMMENDED
-switch ($platform) {
-        'tpp' { 
-            $token = $response_grant.access_token
-            $headers = @{
-                Authorization = "Bearer $token"
-            }
-            $response_revoke = Invoke-WebRequest -Uri "$TPPUrl/vedauth/Revoke/token" -Method 'GET' -Headers $headers -UseBasicParsing
-            
-            if ($response_revoke.StatusCode -eq 200) {
-                Log-Message "Status Description: $($response_revoke.StatusDescription)"                
-            } else {
-                Log-Message "Request failed."
-                Log-Message "Status Code: $($response_revoke.StatusCode)"
-                Log-Message "Status Description: $($response_revoke.StatusDescription)"
-                #Log-Message "Headers: $($response_revoke.Headers | ConvertTo-Json -Depth 10)"
-                #Log-Message "Content: $($response_revoke.Content)"
-            } 
-        }
+{($_ -eq "tlsdc") -or ($_ -eq "tpp")} {
+    $token = $response_grant.access_token
+    $headers = @{
+        Authorization = "Bearer $token"
     }
-
- 
+    $response_revoke = Invoke-WebRequest -Uri "$TPPUrl/vedauth/Revoke/token" -Method 'GET' -Headers $headers -UseBasicParsing
+    
+    if ($response_revoke.StatusCode -eq 200) {
+        Log-Message "Status Description: $($response_revoke.StatusDescription)"                
+    } else {
+        Log-Message "Request failed."
+        Log-Message "Status Code: $($response_revoke.StatusCode)"
+        Log-Message "Status Description: $($response_revoke.StatusDescription)"
+        #Log-Message "Headers: $($response_revoke.Headers | ConvertTo-Json -Depth 10)"
+        #Log-Message "Content: $($response_revoke.Content)"
+    } 
+}
+    

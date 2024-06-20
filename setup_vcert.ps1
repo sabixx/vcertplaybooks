@@ -36,7 +36,11 @@ Log-Message "TLSPC_PlaybookUrl = $TLSPC_PlaybookUrl"
 Log-Message "playBook          = $playBook"
 Log-Message "tempPath          = $tempPath"
 Log-Message "scriptUrl         = $scriptUrl"
+Log-Message "TLSPC_OAuthIdpURL = $TLSPC_OAuthIdpURL"
+Log-Message "TLSPC_tokenURL    = $TLSPC_tokenURL"
+Log-Message "TLSPC_ClientID    = $TLSPC_ClientID"
 Log-Message "TLSPC_Hostname    = $TLSPC_Hostname"
+
 if ($TLSPC_CLIENTSECRET) { Log-Message "TLSPC_CLIENTSECRET      = Fd93-xxxx" }
 
 # Creating the temporary environment variables in the process
