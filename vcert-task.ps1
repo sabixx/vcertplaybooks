@@ -22,7 +22,6 @@ param (
     [Parameter(Mandatory=$false)][string]$TLSPC_ClientSecret
 ) 
 
-
 # Function to append log messages with timestamps - RECOMMENDED
 function Log-Message {
     param (
