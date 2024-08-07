@@ -40,13 +40,6 @@ $playBookPath = Join-Path -Path $tempPath -ChildPath $playBook
 
 Log-Message "==== Start ===="
 
-Log-Message "playbook_url  = $playbook_url"
-Log-Message "playbook      = $playBook"
-Log-Message "playbook path = $playBookPath"
-Log-Message "tempPath      = $tempPath"
-Log-Message "task log file = $logFilePathDownload"
-Log-Message "vcert log file= $logFilePathRun"
-
 Log-Message "playbook_url      = $playbook_url"
 Log-Message "playbook          = $playBook"
 Log-Message "playbook path     = $playBookPath"
