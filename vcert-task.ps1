@@ -16,6 +16,7 @@
 
 param (
     [Parameter(Mandatory=$true)][string]$playbook_url,
+    [Parameter(Mandatory=$false)][string]$TLSPC_APIKEY,
     [Parameter(Mandatory=$false)][string]$TLSPC_OAuthIdpURL,
     [Parameter(Mandatory=$false)][string]$TLSPC_tokenURL,
     [Parameter(Mandatory=$false)][string]$TLSPC_ClientID,
@@ -49,6 +50,7 @@ Log-Message "vcert log file    = $logFilePathRun"
 Log-Message "TLSPC_OAuthIdpURL = $TLSPC_OAuthIdpURL"
 Log-Message "TLSPC_tokenURL    = $TLSPC_tokenURL"
 Log-Message "TLSPC_ClientID    = $TLSPC_ClientID"
+if ($TLSPC_APIKEY) { Log-Message "TLSPC_APIKEY      = API key used, not recommended" }
 
  # Check if the script is running with admin privileges - OPTINAL DEPENDS ON USE CASE
  if (-not ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")) {
@@ -206,17 +208,12 @@ switch ($platform) {
                     $SecureStr = [System.Convert]::FromBase64String($encryptedBase64) 
                     $bytes = [Security.Cryptography.ProtectedData]::Unprotect($SecureStr, $null, [Security.Cryptography.DataProtectionScope]::LocalMachine)
                     $Env:TLSPC_APIKEY = [System.Text.Encoding]::Unicode.GetString($bytes) 
-                    Log-Message "retrieved TLSPC_APIKEY, IT's NOT RECOMMENDED TO USE API KEYS, USE SERVICE ACCOUNTS INSTEAD"  
+                    Log-Message "retrieved TLSPC_APIKEY, IT's NOT RECOMMENDED TO USE API KEYS, USE SERVICE ACCOUNTS INSTEAD!"  
                 }
                 catch {
                     Log-Message "An error occurred retrieving TLSPC_APIKEY: $($_.Exception.Message)"
                 }  
             }
-
-            if (-not $Env:TLSPC_APIKEY) {
-                Log-Message "no TLSPC_APIKEY set, recommended"
-            }   
-        
         }
     }
 

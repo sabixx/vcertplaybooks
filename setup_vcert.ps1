@@ -1,6 +1,7 @@
 param (
     [Parameter(Mandatory=$false)][string]$TLSPC_Hostname,
-    [Parameter(Mandatory=$true)][string]$TLSPC_PlaybookUrl, 
+    [Parameter(Mandatory=$true)][string]$TLSPC_PlaybookUrl,
+    [Parameter(Mandatory=$false)][string]$TLSPC_APIKEY, 
     [Parameter(Mandatory=$false)][string]$TLSPC_OAuthIdpURL,
     [Parameter(Mandatory=$false)][string]$TLSPC_tokenURL,
     [Parameter(Mandatory=$false)][string]$TLSPC_ClientID,
@@ -40,6 +41,7 @@ Log-Message "TLSPC_OAuthIdpURL = $TLSPC_OAuthIdpURL"
 Log-Message "TLSPC_tokenURL    = $TLSPC_tokenURL"
 Log-Message "TLSPC_ClientID    = $TLSPC_ClientID"
 Log-Message "TLSPC_Hostname    = $TLSPC_Hostname"
+if ($TLSPC_APIKEY) { Log-Message "TLSPC_APIKEY      = API key used, not recommended!" }
 
 if ($TLSPC_CLIENTSECRET) { Log-Message "TLSPC_CLIENTSECRET      = Fd93-xxxx" }
 
@@ -73,6 +75,15 @@ if ("$TLSPC_ClientSecret") {
     Log-Message "TLSPC_CLIENTSECRET_$playBook set."     
 } else {
     Log-Message "TLSPC_CLIENTSECRET determined during runtime." 
+}
+
+if ("$TLSPC_APIKEY") {
+    Log-Message "It is not recommended using API keys, use ServiceAccounts and oAuth instead."    
+    Add-Type -AssemblyName System.Security
+    $bytes = [System.Text.Encoding]::Unicode.GetBytes($TLSPC_APIKEY)
+    $SecureStr = [Security.Cryptography.ProtectedData]::Protect($bytes, $null, [Security.Cryptography.DataProtectionScope]::LocalMachine)
+    $SecureStrBase64 = [System.Convert]::ToBase64String($SecureStr)
+    [Environment]::SetEnvironmentVariable("TLSPC_APIKEY_$playBook",$SecureStrBase64, "Machine")  
 }
 
 # Generate a random hour and minute for the task to run
