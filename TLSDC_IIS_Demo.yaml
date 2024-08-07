@@ -18,7 +18,7 @@ certificateTasks:
         locality: London
         state: London
         organization: Venafi
-        orgUnits: [vcert]
+        orgUnits: [IIS]
       sanDNS: 
         - '{{ Hostname | ToLower -}}.tlsp.demo'
       zone: 'Certificates\IIS\Pull'
