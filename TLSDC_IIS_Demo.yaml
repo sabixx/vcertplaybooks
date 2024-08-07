@@ -8,24 +8,23 @@ config:
       refreshToken: '{{ Env "TPP_REFRESH_TOKEN" }}'
 certificateTasks:
   - name: IIS # Task Identifier, no relevance in tool run
-    renewBefore: 20%
+    renewBefore: 30%
     setEnvVars: ["thumbprint"]
     request:
       csr: local
       subject:
-        # Templating needs to go between single quotes to avoid issues when refreshing tokens
         commonName: '{{ Env "TLSPC_Hostname" }}.mimdemo.com'
         country: GB
         locality: London
         state: London
         organization: Venafi
-        orgUnits:
-          - vcert
+        orgUnits: [vcert]
       sanDNS: 
-        - '{{ Hostname | ToLower -}}.venafidemo.com'
-      zone: 'Certificates\vcert\IIS'
+        - '{{ Hostname | ToLower -}}.tlsp.demo'
+      zone: 'Certificates\IIS\Pull'
     installations:
-      - format: PKCS12
-        useLegacyP12: true
-        file: 'c:\temp\cert.p12'
-        p12Password: "5uperSecr3t5!"
+      - format: CAPI
+        capiLocation: 'LocalMachine\MY'
+        capiFriendlyName: 'vCert Playbook - TLSDC_US_IIS_No_Install'
+        capiIsNonExportable: True
+        afterInstallAction: Import-Module Webadministration; Get-WebBinding tlsDC_Pull | where {($_.protocol -eq "https")} | % {$_.addsslcertificate($Env:VCERT_IIS_THUMBPRINT, "My")}
