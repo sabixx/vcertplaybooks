@@ -281,7 +281,7 @@ Log-Message $command
 Invoke-Expression $command
 
 # Revoke Grant - HIGHLY RECOMMENDED
-{($_ -eq "tlsdc") -or ($_ -eq "tpp")} {
+if ($platform -eq "tlsdc" -or $platform -eq "tpp") {
     $token = $response_grant.access_token
     $headers = @{
         Authorization = "Bearer $token"
