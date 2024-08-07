@@ -8,7 +8,7 @@ config:
       refreshToken: '{{ Env "TPP_REFRESH_TOKEN" }}'
 certificateTasks:
   - name: IIS # Task Identifier, no relevance in tool run
-    renewBefore: 100%
+    renewBefore: 30%
     setEnvVars: ["thumbprint"]
     request:
       csr: local
