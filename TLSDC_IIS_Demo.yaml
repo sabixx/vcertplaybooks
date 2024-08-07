@@ -13,7 +13,7 @@ certificateTasks:
     request:
       csr: local
       subject:
-        commonName: '{{ Env "Hostname" }}.tlsp.demo'
+        commonName: '{{ Hostname | ToLower -}}.tlsp.demo'
         country: GB
         locality: London
         state: London
