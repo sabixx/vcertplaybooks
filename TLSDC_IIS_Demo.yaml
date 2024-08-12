@@ -2,13 +2,12 @@ config:
   connection:
     platform: tpp
     url: https://dc.tlsp.demo # URL to TPP instance
-    #trustBundle: /path/to/my/trustbundle.pem # Optional TrustBundle for TPP connection
     credentials:
       accessToken: '{{ Env "TPP_ACCESS_TOKEN" }}'
       refreshToken: '{{ Env "TPP_REFRESH_TOKEN" }}'
 certificateTasks:
-  - name: IIS # Task Identifier, no relevance in tool run
-    renewBefore: 30%
+  - name: IISDC # Task Identifier, no relevance in tool run
+    renewBefore: 31d # or 30%
     setEnvVars: ["thumbprint"]
     request:
       csr: local
@@ -27,4 +26,4 @@ certificateTasks:
         capiLocation: 'LocalMachine\MY'
         capiFriendlyName: 'vCert Playbook - TLSDC_IIS_Demo' #when changing this also change the removal command below
         capiIsNonExportable: True
-        afterInstallAction: Import-Module Webadministration; Get-WebBinding tlsDC_Pull | where {($_.protocol -eq "https")} | % {$_.addsslcertificate($Env:VCERT_IIS_THUMBPRINT, "My")};  Get-ChildItem -Path Cert:\LocalMachine\My | Where-Object { $_.FriendlyName -eq "vCert Playbook - TLSDC_IIS_Demo" -and $_.Thumbprint -ne $Env:VCERT_IIS_THUMBPRINT } | ForEach-Object { Remove-Item -Path "Cert:\LocalMachine\My\$($_.Thumbprint)" -Force } 
+        afterInstallAction: Import-Module Webadministration; Get-WebBinding tlsDC_Pull | where {($_.protocol -eq "https")} | % {$_.addsslcertificate($Env:VCERT_IISDC_THUMBPRINT, "My")};  Get-ChildItem -Path Cert:\LocalMachine\My | Where-Object { $_.FriendlyName -eq "vCert Playbook - TLSDC_IIS_Demo" -and $_.Thumbprint -ne $Env:VCERT_IISDC_THUMBPRINT } | ForEach-Object { Remove-Item -Path "Cert:\LocalMachine\My\$($_.Thumbprint)" -Force } 
