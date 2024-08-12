@@ -48,12 +48,10 @@ $TLSPC_OAuthIdpURL = "https://dev-opv4np2n306var5k.us.auth0.com/oauth/token"
 $TLSPC_tokenURL = "https://api.venafi.cloud/v1/oauth2/v2.0/8152c781-d872-11ec-a937-d73bd47a18d5/token"
 $TLSPC_ClientID = "ZwkLAcWEE2gwz7ntpmlD76gQFhHXNVPP"
 $TLSPC_ClientSecret = 'xxx'
-
 $TLSPC_PlaybookUrl = 'https://raw.githubusercontent.com/sabixx/vcertplaybooks/main/TLSPC_US_IIS_ServiceAccount.yaml';
-
 $TLSPC_hostname = 'vcert_website';
 
-& { $scriptBlock = [scriptblock]::Create((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/sabixx/vcertplaybooks/main/vcert-task.ps1')); & $scriptBlock -playbook_url $playbook_url -TLSPC_OAuthIdpURL $TLSPC_OAuthIdpURL -TLSPC_tokenURL $TLSPC_tokenURL -TLSPC_ClientID $TLSPC_ClientID -TLSPC_ClientSecret $TLSPC_ClientSecret
+& { $scriptBlock = [scriptblock]::Create((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/sabixx/vcertplaybooks/main/vcert-task.ps1')); & $scriptBlock -playbook_url $TLSPC_PlaybookUrl -TLSPC_OAuthIdpURL $TLSPC_OAuthIdpURL -TLSPC_tokenURL $TLSPC_tokenURL -TLSPC_ClientID $TLSPC_ClientID -TLSPC_ClientSecret $TLSPC_ClientSecret
 }
 ```
 
