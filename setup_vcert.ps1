@@ -5,7 +5,9 @@ param (
     [Parameter(Mandatory=$false)][string]$TLSPC_OAuthIdpURL,
     [Parameter(Mandatory=$false)][string]$TLSPC_tokenURL,
     [Parameter(Mandatory=$false)][string]$TLSPC_ClientID,
-    [Parameter(Mandatory=$false)][string]$TLSPC_ClientSecret
+    [Parameter(Mandatory=$false)][string]$TLSPC_ClientSecret,
+    [Parameter(Mandatory=$false)][string]$TLSPC_SyslogServer,
+    [Parameter(Mandatory=$false)][string]$TLSPC_SyslogPort
 )
 
 # Function to append log messages with timestamps
@@ -29,6 +31,7 @@ $playBook = $TLSPC_PlaybookUrl.Split('/')[-1]
 # Check if the script is running with admin privileges
 if (-not ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")) {
     Log-Message "This script requires administrator privileges. Please run it as an administrator."
+    start-sleep -Seconds 5
     exit
 }
 
@@ -43,25 +46,29 @@ Log-Message "TLSPC_ClientID    = $TLSPC_ClientID"
 Log-Message "TLSPC_Hostname    = $TLSPC_Hostname"
 if ($TLSPC_APIKEY) { Log-Message "TLSPC_APIKEY      = API key used, not recommended!" }
 
-if ($TLSPC_CLIENTSECRET) { Log-Message "TLSPC_CLIENTSECRET      = Fd93-xxxx" }
+if ($TLSPC_CLIENTSECRET) { Log-Message "TLSPC_CLIENTSECRET= Fd93-xxxx" }
+
+if ($TLSPC_SyslogServer) { Log-Message "Syslogserver      = $TLSPC_SyslogServer" 
+if ($TLSPC_SyslogPort)   { Log-Message "SyslogPort        = $TLSPC_SyslogPort" } else {
+                           Log-Message "SyslogPort        = 514"} }
 
 # Creating the temporary environment variables in the process
-if ("TLSPC_Hostname") {
+if ("$TLSPC_Hostname") {
      [Environment]::SetEnvironmentVariable("TLSPC_Hostname_$playBook",$TLSPC_Hostname, "Machine")
      Log-Message "Sucessfully set TLSPC_Hostname_$playBook" 
 }
 
-if ("TLSPC_ClientId") {
+if ("$TLSPC_ClientId") {
     [Environment]::SetEnvironmentVariable("TLSPC_CLIENTID_$playBook",$TLSPC_CLIENTID, "Machine")
     Log-Message "Sucessfully set TLSPC_CLIENTID_$playBook" 
 }
 
-if ("TLSPC_tokenURL") {
+if ("$TLSPC_tokenURL") {
     [Environment]::SetEnvironmentVariable("TLSPC_TOKENURL_$playBook",$TLSPC_tokenURL, "Machine")
     Log-Message "Sucessfully set TLSPC_TOKENURL_$playBook" 
 }
 
-if ("TLSPC_OAuthIdpURL") {
+if ("$TLSPC_OAuthIdpURL") {
     [Environment]::SetEnvironmentVariable("TLSPC_OAUTHIDPURL_$playBook",$TLSPC_OAuthIdpURL, "Machine")
     Log-Message "Sucessfully set TLSPC_OAuthIdpURL_$playBook" 
 }
@@ -86,6 +93,16 @@ if ("$TLSPC_APIKEY") {
     [Environment]::SetEnvironmentVariable("TLSPC_APIKEY_$playBook",$SecureStrBase64, "Machine")  
 }
 
+if ("$TLSPC_SyslogServer") {
+    [Environment]::SetEnvironmentVariable("TLSPC_SyslogServer_$playBook",$TLSPC_SyslogServer, "Machine")
+    Log-Message "Sucessfully set TLSPC_SyslogServer_$playBook" 
+}
+
+if ("$TLSPC_SyslogPort") {
+    [Environment]::SetEnvironmentVariable("$TLSPC_SyslogPort_$playBook",$TLSPC_SyslogPort, "Machine")
+    Log-Message "Sucessfully set $TLSPC_SyslogPort_$playBook" 
+}
+
 # Generate a random hour and minute for the task to run
 $randomHour = Get-Random -Minimum 8 -Maximum 10
 
@@ -104,4 +121,4 @@ $principal = New-ScheduledTaskPrincipal -UserId "SYSTEM" -LogonType ServiceAccou
 # Register the scheduled task with a specified name
 $taskName = "vcert - $playBook"
 Register-ScheduledTask -TaskName $taskName -Action $action -Trigger $trigger -Principal $principal -Description "runs the vcert playbook, checks certificates(s) and performs renewal when necessary"
-Log-Message "Created task succesfully: vcert - $playBook"
+Log-Message "Created task succesfully: vcert - $playBook" 
