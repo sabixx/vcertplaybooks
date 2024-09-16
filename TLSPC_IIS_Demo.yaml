@@ -26,4 +26,4 @@ certificateTasks:
         capiLocation: 'LocalMachine\MY'
         capiFriendlyName: 'vCert Playbook - TLSPC_IIS_Demo'
         capiIsNonExportable: True
-        afterInstallAction: Import-Module Webadministration; Get-WebBinding tlsPC_Pull | where {($_.protocol -eq "https")} | % {$_.addsslcertificate($Env:VCERT_IISPC_THUMBPRINT, "My")};  Get-ChildItem -Path Cert:\LocalMachine\My | Where-Object { $_.FriendlyName -eq "vCert Playbook - TLSPC_IIS_Demo" -and $_.Thumbprint -ne $Env:VCERT_IISPC_THUMBPRINT } | ForEach-Object { Remove-Item -Path "Cert:\LocalMachine\My\$($_.Thumbprint)" -Force } 
+        afterInstallAction: Import-Module Webadministration; Get-WebBinding tlsPC_Pull | where {($_.protocol -eq "https")} | % {$_.addsslcertificate($Env:VCERT_IISPC_THUMBPRINT, "My")};  Get-ChildItem -Path Cert:\LocalMachine\My | Where-Object { $_.FriendlyName -eq "vCert Playbook - TLSPC_IIS_Demo" -and $_.Thumbprint -ne $Env:VCERT_IISPC_THUMBPRINT } | ForEach-Object { Remove-Item -Path "Cert:\LocalMachine\My\$($_.Thumbprint)" -Force }
