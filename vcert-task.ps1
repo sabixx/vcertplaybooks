@@ -65,7 +65,10 @@ function Send-SyslogMessageUDP {
     $severityValue = Get-SyslogSeverity -Message $Message
     $facility = 1
     $priority = ($facility * 8) + $severityValue
-    $syslogMsg = "<$priority>$([datetime]::Now.ToString('yyyy-MM-ddTHH:mm:ss')) $Hostname $Message [Category=$Category]"
+    #$syslogMsg = "$Message facility:$facility $Hostname [Category=$Category]"
+    #$syslogMsg = "$Message <$priority> level:$severityvalue $Hostname [Category=$Category]"
+    $syslogMsg = "<$priority> $Message $Hostname [Category=$Category]"
+    #$syslogMsg = "<$priority>$([datetime]::Now.ToString('yyyy-MM-ddTHH:mm:ss')) $Hostname $Message [Category=$Category]"
 
     # Send the message over UDP
     try {
@@ -75,10 +78,9 @@ function Send-SyslogMessageUDP {
         $udpClient.Send($encodedMsg, $encodedMsg.Length) | Out-Null  # Suppress output
         $udpClient.Close()
     } catch {
-        Log-Message "Failed to send Syslog message: $_", false
+        Log-Message "Failed to send Syslog message: $_", -Syslog $false
     }
 }
-
 
 # Function to send the captured output to Graylog over TCP
 function Send-SyslogMessageTCP {
@@ -99,7 +101,7 @@ function Send-SyslogMessageTCP {
     $priority = ($facility * 8) + $severityValue
 
     # Construct the Syslog message with category
-    $syslogMsg = "<$priority>$([datetime]::Now.ToString('yyyy-MM-ddTHH:mm:ss')) $Hostname $Message [Category=$Category]"
+    $syslogMsg = "$Message $Hostname [Category=$Category]"
 
     # Send the message over TCP
     try {
@@ -111,11 +113,13 @@ function Send-SyslogMessageTCP {
         $stream.Close()
         $tcpClient.Close()
     } catch {
-        Log-Message "Failed to send Syslog message: $_", false
+        Log-Message "Failed to send Syslog message: $_", -Syslog $false
     } finally {
         # write-host "send message: $Message"    
     }
 }
+
+Log-Message ("INFO Hello World")
 
 # Function to append log messages with timestamps - RECOMMENDED
 function Log-Message {
@@ -125,20 +129,23 @@ function Log-Message {
         [string]$SyslogCategory = 'vcert/wrapper'
     )
 
-    $timestampPattern = '^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}([+-]\d{2}:\d{2})?'
-    $timestamp = Get-Date -Format "yyyy-MM-ddTHH:mm:ss.fffK"
+    $timestampPattern = '^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}([+-]\d{2}\d{2})?'
+    $timestamp = "{0:yyyy-MM-ddTHH:mm:ss.fff}{1}" -f (Get-Date), (Get-Date).ToString("zzz").Replace(":", "")
+
     if (-not ($Message -match $timestampPattern)) {
        $Message = "$timestamp`t$Message"
+    }
+
+    if ($Syslog -and $TLSPC_SyslogServer) {
+        #Send-SyslogMessageTCP -Message $Message -Hostname "$Env:Computername" -TLSPC_SyslogServer $TLSPC_SyslogServer -TLSPC_SyslogPort $TLSPC_SyslogPort  -Category $SyslogCategory 
+        Send-SyslogMessageUDP -Message $Message -Hostname "$Env:Computername" -TLSPC_SyslogServer $TLSPC_SyslogServer -TLSPC_SyslogPort $TLSPC_SyslogPort -Category $SyslogCategory
     }
 
     Add-Content -Path $logFilePath -Value "$Message"
     Write-Host "$Message"
 
-    if ($Syslog -and $TLSPC_SyslogServer) {
-        # Send-SyslogMessageTCP -Message $Message -Hostname "$Env:Computername" -TLSPC_SyslogServer $TLSPC_SyslogServer -TLSPC_SyslogPort $TLSPC_SyslogPort  -Category $SyslogCategory 
-        Send-SyslogMessageUDP -Message $Message -Hostname "$Env:Computername" -TLSPC_SyslogServer $TLSPC_SyslogServer -TLSPC_SyslogPort $TLSPC_SyslogPort -Category $SyslogCategory
-    }
 }
+
 
 $playBook = $playbook_url.Split('/')[-1] 
 $tempPath = [System.IO.Path]::GettempPath()
@@ -170,7 +177,6 @@ Log-Message "INFO`tplaybook           = $playBook"
 Log-Message "INFO`tplaybook path      = $playBookPath" 
 Log-Message "INFO`ttempPath           = $tempPath" 
 Log-Message "INFO`tlog file           = $logFilePath" 
-#Log-Message "INFO`tvcert log file     = $logFilePathRun" 
 Log-Message "INFO`tTLSPC_OAuthIdpURL  = $TLSPC_OAuthIdpURL" 
 Log-Message "INFO`tTLSPC_tokenURL     = $TLSPC_tokenURL"
 Log-Message "INFO`tTLSPC_ClientID     = $TLSPC_ClientID" 
@@ -425,9 +431,9 @@ Log-Message "INFO`t$command"
 try { 
     $versionOutput = Invoke-Expression $command
 } catch {
-    Log-Message "ERROR`t Failed to execute the vcert version command. ERROR`t: $_"
+    Log-Message ("ERROR`t Failed to execute the vcert version command. ERROR`t: $_") -SyslogCategory "vcert/vcert"
 }
-$versionOutput | ForEach-Object { Log-Message "INFO`t$_" }
+$versionOutput | ForEach-Object { (Log-Message "INFO`t$_" -SyslogCategory "vcert/vcert") }
 
 
 # $command = '& ' + "$vcertExePath" + ' run -d -f ' + "$playBookPath" + ' 2>&1 | %{ "$_" } | Tee-Object -FilePath ' + "$logFilePathR" + ' -Append'   
@@ -438,9 +444,10 @@ try {
     $output = Invoke-Expression $command
 }
 catch {
-    Log-Message("CRITICAL`toccurred while executing vcert: $_")
+    Log-Message("CRITICAL`tsevere error occurred while executing vcert: $_") -SyslogCategory "vcert/vcert"
 }
-$output | ForEach-Object { Log-Message $_ }
+$output | ForEach-Object { (Log-Message $_ -SyslogCategory "vcert/vcert") }
+
 
 # Revoke Grant for TPP - HIGHLY RECOMMENDED
 if ($platform -eq "tlsdc" -or $platform -eq "tpp") {
