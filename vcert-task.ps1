@@ -141,7 +141,8 @@ function Log-Message {
         Send-SyslogMessageUDP -Message $Message -Hostname "$Env:Computername" -TLSPC_SyslogServer $TLSPC_SyslogServer -TLSPC_SyslogPort $TLSPC_SyslogPort -Category $SyslogCategory
     }
 
-    Add-Content -Path $logFilePath -Value "$Message"
+    $Message | Out-File -FilePath $logFilePath -Append -Encoding UTF8
+    #Add-Content -Path $logFilePath -Value "$Message"
     Write-Host "$Message"
 
 }
