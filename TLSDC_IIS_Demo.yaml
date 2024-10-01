@@ -10,7 +10,6 @@ certificateTasks:
     renewBefore: 30d  # or percentage like 30%
     setEnvVars: ["thumbprint"]
     request:
-      validDays: 31d
       csr: local
       subject:
         commonName: '{{ Hostname | ToLower -}}.tlsp.demo'
