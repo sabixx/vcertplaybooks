@@ -71,10 +71,7 @@ function Send-SyslogMessageUDP {
     $severityValue = Get-SyslogSeverity -Message $Message
     $facility = 1
     $priority = ($facility * 8) + $severityValue
-    #$syslogMsg = "$Message facility:$facility $Hostname [Category=$Category]"
-    #$syslogMsg = "$Message <$priority> level:$severityvalue $Hostname [Category=$Category]"
     $syslogMsg = "<$priority> $Message $Hostname [Category=$Category]"
-    #$syslogMsg = "<$priority>$([datetime]::Now.ToString('yyyy-MM-ddTHH:mm:ss')) $Hostname $Message [Category=$Category]"
 
     # Send the message over UDP
     try {
@@ -99,16 +96,10 @@ function Send-SyslogMessageTCP {
         [string]$Category = 'Venafi/vcert'
     )
 
-    # Determine the severity based on the message content
     $severityValue = Get-SyslogSeverity -Message $Message
-
-    # Determine Syslog priority based on facility (1 for user-level messages) and severity
     $facility = 1
-
     $priority = ($facility * 8) + $severityValue
-
-    # Construct the Syslog message with category
-    $syslogMsg = "$Message $Hostname [Category=$Category]"
+    $syslogMsg = "<$priority> $Message $Hostname [Category=$Category]"
 
     # Send the message over TCP
     try {
@@ -154,7 +145,6 @@ function Log-Message {
     Write-Host "$Message"
 
 }
-
 
 $playBook = $playbook_url.Split('/')[-1] 
 $tempPath = [System.IO.Path]::GettempPath()
