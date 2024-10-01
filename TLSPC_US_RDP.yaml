@@ -9,7 +9,7 @@ certificateTasks:
     setEnvVars: ["thumbprint"]
     request:
       csr: local
-      validDays: 32d
+      validDays: 31d
       subject:
         commonName: '{{ Env "TLSCP_Hostname" }}.venafidemo.com'
         country: GB
