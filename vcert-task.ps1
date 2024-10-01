@@ -459,7 +459,7 @@ $versionOutput | ForEach-Object { (Log-Message "INFO`t$_" -SyslogCategory "vcert
 
 
 # $command = '& ' + "$vcertExePath" + ' run -d -f ' + "$playBookPath" + ' 2>&1 | %{ "$_" } | Tee-Object -FilePath ' + "$logFilePathR" + ' -Append'   
-$command = "$vcertExePath" + ' run -force-renew -f ' + "$playBookPath" + ' 2>&1 | %{ "$_" }'
+$command = "$vcertExePath" + ' run -f ' + "$playBookPath" + ' 2>&1 | %{ "$_" }'
 Log-Message "INFO`t$command"
 
 try {
