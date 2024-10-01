@@ -11,6 +11,7 @@ certificateTasks:
     setEnvVars: ["thumbprint"]
     request:
       csr: local
+      keySize: 3072
       subject:
         commonName: '{{ Hostname | ToLower -}}.tlsp.demo'
         country: GB
