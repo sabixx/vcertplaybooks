@@ -142,7 +142,6 @@ function Log-Message {
     }
 
     $Message | Out-File -FilePath $logFilePath -Append -Encoding UTF8
-    #Add-Content -Path $logFilePath -Value "$Message"
     Write-Host "$Message"
 
 }
