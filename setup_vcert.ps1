@@ -51,7 +51,7 @@ function Send-SyslogMessageUDP {
         [int]$TLSPC_SyslogPort = 514,
         [string]$Message,
         [string]$Hostname = $env:COMPUTERNAME, # Default to the current machine's hostname if not provided
-        [string]$Category = 'Venafi/vcert'
+        [string]$Category = 'Venafi/vcert-setup'
     )
 
     $severityValue = Get-SyslogSeverity -Message $Message
@@ -79,7 +79,7 @@ function Send-SyslogMessageTCP {
         [int]$TLSPC_SyslogPort = 514,
         [string]$Message,
         [string]$Hostname,
-        [string]$Category = 'Venafi/vcert'
+        [string]$Category = 'Venafi/vcert-setup'
     )
 
     $severityValue = Get-SyslogSeverity -Message $Message
@@ -110,7 +110,7 @@ function Write-Log {
     param (
         [string]$Message,
         [bool]$Syslog = $true,
-        [string]$SyslogCategory = 'vcert/wrapper'
+        [string]$SyslogCategory = 'vcert/setup'
     )
 
     $timestampPattern = '^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}([+-]\d{2}\d{2})?'
