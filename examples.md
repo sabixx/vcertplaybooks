@@ -31,6 +31,8 @@ $TLSPC_SyslogPort = 30514;
 ```
 
 ## TLS DC with Windows Integrated Auth
+
+### IIS demo
 ```
 & {
     $TLSPC_hostname = 'vcert_website';
@@ -40,6 +42,7 @@ $TLSPC_SyslogPort = 30514;
 }
 ```
 
+### RDP demo
 ```
 & {
     $TLSPC_hostname = '';
