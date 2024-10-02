@@ -21,7 +21,7 @@ certificateTasks:
     installations:
       - format: CAPI
         capiLocation: 'LocalMachine\MY'
-        capiFriendlyName: 'vCert Playbook - TLSDC_IIS_Demo' #when changing this also change the removal command below
+        capiFriendlyName: 'vCert Playbook - TLSDC_RDP_Demo' #when changing this also change the removal command below
         capiIsNonExportable: True      
         afterInstallAction: $path = (Get-WmiObject -class "Win32_TSGeneralSetting" -Namespace root\cimv2\terminalservices -Filter "TerminalName='RDP-tcp'").__path; $result = Set-WmiInstance -Path $path -argument @{SSLCertificateSHA1Hash="$Env:VCERT_RDP_THUMBPRINT"}; Get-ChildItem -Path Cert:\LocalMachine\My | Where-Object { $_.FriendlyName -eq "vCert Playbook - TLSDC_RDP_Demo" -and $_.Thumbprint -ne $Env:VCERT_RDP_THUMBPRINT } | ForEach-Object { Remove-Item -Path "Cert:\LocalMachine\My\$($_.Thumbprint)" -Force }
 config:
