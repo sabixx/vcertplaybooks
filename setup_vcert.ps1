@@ -209,8 +209,8 @@ if ("$TLSPC_SyslogServer") {
 }
 
 if ("$TLSPC_SyslogPort") {
-    [Environment]::SetEnvironmentVariable("$TLSPC_SyslogPort_$playBook",$TLSPC_SyslogPort, "Machine")
-    Write-Log "Sucessfully set $TLSPC_SyslogPort_$playBook" 
+    [Environment]::SetEnvironmentVariable("TLSPC_SyslogPort_$playBook",$TLSPC_SyslogPort, "Machine")
+    Write-Log "Sucessfully set TLSPC_SyslogPort_$playBook" 
 }
 
 # Generate a random hour and minute for the task to run
