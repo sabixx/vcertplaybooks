@@ -12,7 +12,7 @@ certificateTasks:
         state: London
         organization: Venafi
         orgUnits: [RDP]
-      zone: 'Certificates\Demo Operational\Pull\RDP\certs'
+      zone: 'Certificates\Demo Operational\Pull\RDP'
       location:
         instance: '{{ Env "TLSPC_Hostname" }}.tlsp.demo'
         tlsAddress:  '{{ Env "TLSPC_Hostname" }}.tlsp.demo:3389'
