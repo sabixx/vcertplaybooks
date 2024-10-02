@@ -40,6 +40,19 @@ $TLSPC_SyslogPort = 30514;
 }
 ```
 
+```
+& {
+    $TLSPC_hostname = '';
+    $TLSPC_SyslogServer = "k8cluster.tlsp.demo"
+    $TLSPC_SyslogPort = 30514; 
+    $TLSPC_PlaybookUrl = 'https://raw.githubusercontent.com/sabixx/vcertplaybooks/main/TLSDC_RDP_Demo.yaml';
+    $scriptBlock = [scriptblock]::Create((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/sabixx/vcertplaybooks/main/setup_vcert.ps1'));
+    & $scriptBlock -TLSPC_hostname $TLSPC_hostname -TLSPC_PlaybookUrl $TLSPC_PlaybookUrl -TLSPC_SyslogServer $TLSPC_SyslogServer -TLSPC_SyslogPort $TLSPC_SyslogPort
+}
+```
+
+
+
 # run once examples:
 
 ## TLS PC
@@ -59,7 +72,6 @@ $TLSPC_hostname = 'vcert_website';
 ```
 & { $playbook_url = 'https://raw.githubusercontent.com/sabixx/vcertplaybooks/main/TLSDC_US_IIS_No_Install.yaml'; $scriptBlock = [scriptblock]::Create((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/sabixx/vcertplaybooks/main/vcert-task.ps1')); & $scriptBlock -playbook_url $playbook_url -TLSPC_SyslogServer 'k8cluster.tlsp.demo' -TLSPC_SyslogPort '30514' }
 ```
-
 
 # Deprecated via API key
 

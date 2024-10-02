@@ -1,22 +1,7 @@
-  # This demo shows some options how vcert can be run. 
-# The script performs several taks such downloading the 
-# latest version of vcert and playbook. It's performing
-# authentication based on the platform of the playbook.
-#
-# Depening on the use case it's requiered to add, remove
-# parts of this script. It's intended as a starting point
-# making it easier to deploy vcert for the coresponding
-# use case.
-#
-# For each of the part there's is a - RECOMMENDATION IF
-# CERTAIN PARTS SHOULD BE USED OR IF THEY ARE OPTIONAL
-# 
-# (C) 2024 Jens Sabitzer jens.sabitzer@venafi.com
-#
-
 param (
-    [Parameter(Mandatory=$true)][string]$playbook_url,
-    [Parameter(Mandatory=$false)][string]$TLSPC_APIKEY,
+    [Parameter(Mandatory=$false)][string]$TLSPC_Hostname,
+    [Parameter(Mandatory=$true)][string]$TLSPC_PlaybookUrl,
+    [Parameter(Mandatory=$false)][string]$TLSPC_APIKEY, 
     [Parameter(Mandatory=$false)][string]$TLSPC_OAuthIdpURL,
     [Parameter(Mandatory=$false)][string]$TLSPC_tokenURL,
     [Parameter(Mandatory=$false)][string]$TLSPC_ClientID,
@@ -24,6 +9,7 @@ param (
     [Parameter(Mandatory=$false)][string]$TLSPC_SyslogServer,
     [Parameter(Mandatory=$false)][string]$TLSPC_SyslogPort
 )
+
 
 # Function to determine the Syslog severity based on the log message
 function Get-SyslogSeverity {
@@ -35,17 +21,23 @@ function Get-SyslogSeverity {
 
     if ($Message -match "DEBUG") {
         $severityValue = 7  # debug
-    } elseif ($Message -match "INFO") {
+    }
+    elseif ($Message -match "INFO") {
         $severityValue = 6  # info
-    } elseif ($Message -match "WARN" -or $Message -match "WARNING") {
+    }
+    elseif ($Message -match "WARN" -or $Message -match "WARNING") {
         $severityValue = 4  # warning
-    } elseif ($Message -match "ERROR" -or $Message -match "ERR") {
+    }
+    elseif ($Message -match "ERROR" -or $Message -match "ERR") {
         $severityValue = 3  # error
-    } elseif ($Message -match "CRITICAL" -or $Message -match "CRIT") {
+    }
+    elseif ($Message -match "CRITICAL" -or $Message -match "CRIT") {
         $severityValue = 2  # critical
-    } elseif ($Message -match "ALERT") {
+    }
+    elseif ($Message -match "ALERT") {
         $severityValue = 1  # alert
-    } elseif ($Message -match "EMERGENCY" -or $Message -match "EMERG") {
+    }
+    elseif ($Message -match "EMERGENCY" -or $Message -match "EMERG") {
         $severityValue = 0  # emergency
     }
 
@@ -58,16 +50,14 @@ function Send-SyslogMessageUDP {
         [string]$TLSPC_SyslogServer,
         [int]$TLSPC_SyslogPort = 514,
         [string]$Message,
-        [string]$Hostname = $env:COMPUTERNAME,  # Default to the current machine's hostname if not provided
+        [string]$Hostname = $env:COMPUTERNAME, # Default to the current machine's hostname if not provided
         [string]$Category = 'Venafi/vcert'
     )
 
-    #$severityValue = Get-SyslogSeverity -Message $Message
+    $severityValue = Get-SyslogSeverity -Message $Message
     $facility = 1
     $priority = ($facility * 8) + $severityValue
-    $syslogMsg = "$Message facility:$facility $Hostname [Category=$Category]"
-     $syslogMsg = "$Message <$facility.$priority> $Hostname [Category=$Category]"
-    #$syslogMsg = "<$priority>$([datetime]::Now.ToString('yyyy-MM-ddTHH:mm:ss')) $Hostname $Message [Category=$Category]"
+    $syslogMsg = "<$priority> $Message $Hostname [Category=$Category]"
 
     # Send the message over UDP
     try {
@@ -76,8 +66,9 @@ function Send-SyslogMessageUDP {
         $encodedMsg = [System.Text.Encoding]::UTF8.GetBytes($syslogMsg + "`n")  # Use UTF-8 encoding
         $udpClient.Send($encodedMsg, $encodedMsg.Length) | Out-Null  # Suppress output
         $udpClient.Close()
-    } catch {
-        Log-Message "Failed to send Syslog message: $_", -Syslog $false
+    }
+    catch {
+        Write-Log "Failed to send Syslog message: $_", -Syslog $false
     }
 }
 
@@ -91,16 +82,10 @@ function Send-SyslogMessageTCP {
         [string]$Category = 'Venafi/vcert'
     )
 
-    # Determine the severity based on the message content
-    #$severityValue = Get-SyslogSeverity -Message $Message
-
-    # Determine Syslog priority based on facility (1 for user-level messages) and severity
+    $severityValue = Get-SyslogSeverity -Message $Message
     $facility = 1
-
     $priority = ($facility * 8) + $severityValue
-
-    # Construct the Syslog message with category
-    $syslogMsg = "$Message <$priority> $Hostname [Category=$Category]"
+    $syslogMsg = "<$priority> $Message $Hostname [Category=$Category]"
 
     # Send the message over TCP
     try {
@@ -111,27 +96,28 @@ function Send-SyslogMessageTCP {
         $stream.Flush()
         $stream.Close()
         $tcpClient.Close()
-    } catch {
-        Log-Message "Failed to send Syslog message: $_", -Syslog $false
-    } finally {
+    }
+    catch {
+        Write-Log "Failed to send Syslog message: $_", -Syslog $false
+    }
+    finally {
         # write-host "send message: $Message"    
     }
 }
 
-Log-Message ("INFO Hello World")
-
 # Function to append log messages with timestamps - RECOMMENDED
-function Log-Message {
+function Write-Log {
     param (
         [string]$Message,
         [bool]$Syslog = $true,
         [string]$SyslogCategory = 'vcert/wrapper'
     )
 
-    $timestampPattern = '^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}([+-]\d{2}:\d{2})?'
-    $timestamp = Get-Date -Format "yyyy-MM-ddTHH:mm:ss.fffK"
+    $timestampPattern = '^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}([+-]\d{2}\d{2})?'
+    $timestamp = "{0:yyyy-MM-ddTHH:mm:ss.fff}{1}" -f (Get-Date), (Get-Date).ToString("zzz").Replace(":", "")
+
     if (-not ($Message -match $timestampPattern)) {
-       $Message = "$timestamp`t$Message"
+        $Message = "$timestamp`t$Message"
     }
 
     if ($Syslog -and $TLSPC_SyslogServer) {
@@ -139,331 +125,110 @@ function Log-Message {
         Send-SyslogMessageUDP -Message $Message -Hostname "$Env:Computername" -TLSPC_SyslogServer $TLSPC_SyslogServer -TLSPC_SyslogPort $TLSPC_SyslogPort -Category $SyslogCategory
     }
 
-    Add-Content -Path $logFilePath -Value "$Message"
+    $Message | Out-File -FilePath $logFilePath -Append -Encoding UTF8
     Write-Host "$Message"
 
 }
 
+$tempPath = [System.IO.Path]::GetTempPath()
+$logFilePath = Join-Path -Path  "$tempPath" "vcert_schtask_setup_log.txt"
 
-$playBook = $playbook_url.Split('/')[-1] 
-$tempPath = [System.IO.Path]::GettempPath()
-$logFilePath = Join-Path -Path  "$tempPath" "vcertlog_$playBook.txt"
-#$logFilePathRun = Join-Path -Path  "$tempPath" "vcert_run_log.txt"
-$playBookPath = Join-Path -Path $tempPath -ChildPath $playBook
+# vcert task to run on daily basis
+$scriptUrl = "https://raw.githubusercontent.com/sabixx/vcertplaybooks/main/vcert-task.ps1"
 
-Log-Message "DEBUG`t==== Start ===="
+$playBook = $TLSPC_PlaybookUrl.Split('/')[-1]
 
-# Retrieve SyslogServer - OPTIONAL
-if ( [Environment]::GetEnvironmentVariable("TLSPC_SyslogServer_$playBook", "Machine")) {
-    $TLSPC_SyslogServer = [System.Environment]::GetEnvironmentVariable("TLSPC_SyslogServer_$playBook",'Machine')
-}
-
-# Retrieve SyslogPort - OPTIONAL
-if ( [Environment]::GetEnvironmentVariable("TLSPC_SyslogPort_$playBook", "Machine")) {
-    $TLSPC_SyslogPort = [System.Environment]::GetEnvironmentVariable("TLSPC_SyslogPort_$playBook",'Machine')
-}
-
-# Set $TLSPC_Hostname as an environment variable for the current process only - OPTIONAL
-if (-not [Environment]::GetEnvironmentVariable("TLSPC_Hostname_$playBook", "Machine")) {
-    [Environment]::SetEnvironmentVariable("TLSPC_Hostname", [System.Net.Dns]::GetHostName(), "Process")
-} else {
-    $Env:TLSPC_Hostname = [System.Environment]::GetEnvironmentVariable("TLSPC_Hostname_$playBook",'Machine')
-}
-
-Log-Message "INFO`tplaybook_url       = $playbook_url"
-Log-Message "INFO`tplaybook           = $playBook" 
-Log-Message "INFO`tplaybook path      = $playBookPath" 
-Log-Message "INFO`ttempPath           = $tempPath" 
-Log-Message "INFO`tlog file           = $logFilePath" 
-Log-Message "INFO`tTLSPC_OAuthIdpURL  = $TLSPC_OAuthIdpURL" 
-Log-Message "INFO`tTLSPC_tokenURL     = $TLSPC_tokenURL"
-Log-Message "INFO`tTLSPC_ClientID     = $TLSPC_ClientID" 
-Log-Message "INFO`tTLSPC_SyslogServer = $TLSPC_SyslogServer"
-Log-Message "INFO`tTLSPC_SyslogPort   = $TLSPC_SyslogPort"
-Log-Message "INFO`tTLSPC_hostname     = $Env:TLSPC_Hostname"
-
-if ($TLSPC_APIKEY)       { Log-Message "WARN`tTLSPC_APIKEY      = API key used, not recommended" } 
-
- # Check if the script is running with admin privileges - OPTINAL DEPENDS ON USE CASE
- if (-not ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")) {
-    Log-Message "INFO`tNot running as Administrator. Some use cases require administrator privileges."
-    #exit #do not exit out, some use cases may not require admin permissions.
- }
-
-# check is playbook_url was provided - RECOMMENDED
-if (-not $playbook_url) {
-    Log-Message "CRITICAL`tno playbook_url provided, exiting."
+# Check if the script is running with admin privileges
+if (-not ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")) {
+    Write-Log "This script requires administrator privileges. Please run it as an administrator."
+    start-sleep -Seconds 5
     exit
 }
 
-try {
-    # Download the Playbook - RECOMMENDED
-    Invoke-WebRequest -Uri $playbook_url -OutFile $playBookPath
-    Log-Message "INFO`tPlaybook downloaded to $playBookPath"
-} catch {
-    Log-Message "CRITICAL`tFailed downloading playbook from $playbook_url. ERROR`t: $_"
+# write log entries:
+Write-Log "TLSPC_PlaybookUrl = $TLSPC_PlaybookUrl"
+Write-Log "playBook          = $playBook"
+Write-Log "tempPath          = $tempPath"
+Write-Log "scriptUrl         = $scriptUrl"
+Write-Log "TLSPC_OAuthIdpURL = $TLSPC_OAuthIdpURL"
+Write-Log "TLSPC_tokenURL    = $TLSPC_tokenURL"
+Write-Log "TLSPC_ClientID    = $TLSPC_ClientID"
+Write-Log "TLSPC_Hostname    = $TLSPC_Hostname"
+if ($TLSPC_APIKEY) { Write-Log "TLSPC_APIKEY      = API key used, not recommended!" }
+
+if ($TLSPC_CLIENTSECRET) { Write-Log "TLSPC_CLIENTSECRET= Fd93-xxxx" }
+
+if ($TLSPC_SyslogServer) { Write-Log "Syslogserver      = $TLSPC_SyslogServer" 
+if ($TLSPC_SyslogPort)   { Write-Log "SyslogPort        = $TLSPC_SyslogPort" } else {
+                           Write-Log "SyslogPort        = 514"} }
+
+# Creating the temporary environment variables in the process
+if ("$TLSPC_Hostname") {
+     [Environment]::SetEnvironmentVariable("TLSPC_Hostname_$playBook",$TLSPC_Hostname, "Machine")
+     Write-Log "Sucessfully set TLSPC_Hostname_$playBook" 
 }
 
-# Determine the platform (vaas or tpp) - CHANGE, BEST TO MAKE IT FIT FOR PURPOOSE
-try {
-    $platform = switch -regex -file "$playBookPath" {'platform:'{"$_"} }
-    $platform = $platform -replace 'platform:',''
-    $platform = ($platform.Split("#"))[0].Trim()
-    $platform = $platform -replace '[^a-zA-Z0-9]', '' 
-    Log-Message "INFO`tPlatform = $platform"  
-} catch {
-    Log-Message "CRITICAL`tcould not determine platform."
+if ("$TLSPC_ClientId") {
+    [Environment]::SetEnvironmentVariable("TLSPC_CLIENTID_$playBook",$TLSPC_CLIENTID, "Machine")
+    Write-Log "Sucessfully set TLSPC_CLIENTID_$playBook" 
 }
 
-# Perform authentication based on Platorm - CHANGE, BEST TO MAKE IT FIT FOR PURPOOSE
-switch ($platform) {
-#####################################################################################################################
-################################ # TLSDC with windows Integrated Auth ###############################################
-#####################################################################################################################
-    {($_ -eq "tlsdc") -or ($_ -eq "tpp")} {
-        try {
-            $TPPurl = switch -regex (Get-Content "$playBookPath") {'url:'{"$_"} }
-            $TPPurl = $TPPurl -replace 'url:', ''
-            $TPPurl = ($TPPurl.Split("#"))[0].Trim()
-            Log-Message "DEBUG`tTPPurl = $TPPurl"  
-
-            $client_id = switch -regex (Get-Content "$playBookPath") {'clientId:'{"$_"} }
-            if ($null -eq $client_id -or $client_id -eq "") {
-                $client_id = "vcert-cli"
-            } else {
-                $client_id = $client_id -replace 'clientId:', ''
-                $client_id = ($client_id.Split("#"))[0].Trim()
-            }
-            Log-Message "DEBUG`tclient_id = $client_id" 
-            $response_grant = Invoke-RestMethod "$TPPUrl/vedauth/authorize/integrated" -UseDefaultCredentials -Method POST -Body (@{"client_id"="$client_id"; "scope"="certificate:manage"} | ConvertTo-Json) -ContentType "application/json" -UseBasicParsing
-            $env:TPP_ACCESS_TOKEN = $response_grant.access_token
-            $env:TPP_REFRESH_TOKEN = $response_grant.refresh_token
-
-            Log-Message "INFO`tretrieved oAuth bearer token."  
-        }
-        catch {
-            Log-Message "ERROR`t An ERROR`t occurred retrieving oAuth bearer token: $($_.Exception.Message)"
-            Log-Message $response_grant
-        }
-
-        if (-not $Env:TPP_ACCESS_TOKEN) {
-            Log-Message "CRITICAL`tno ACCESS_TOKEN set, exiting."
-            exit
-        }
-    }
-
-#####################################################################################################################
-################################## TLS PC with ServiceAccount JWT authentication  ###################################
-#####################################################################################################################
-
-     {($_ -eq "tlspc") -or ($_ -eq "vaas")} {  
-        
-        # Set $TLSPC_CLIENTID as an environment variable for the current process only - OPTIONAL
-        if ( [Environment]::GetEnvironmentVariable("TLSPC_CLIENTID_$playBook", "Machine")) {
-            $TLSPC_CLIENTID = [System.Environment]::GetEnvironmentVariable("TLSPC_CLIENTID_$playBook",'Machine')
-            Log-Message "DEBUG`tretrieved TLSPC_CLIENTID = $TLSPC_CLIENTID"
-        } 
-
-        # Set $TLSPC_tokenURL as an environment variable for the current process only - OPTIONAL
-        if ( [Environment]::GetEnvironmentVariable("TLSPC_TOKENURL_$playBook", "Machine")) {
-            $TLSPC_tokenURL = [System.Environment]::GetEnvironmentVariable("TLSPC_TOKENURL_$playBook",'Machine')
-            # setting token_url as environment variable as playbook requiers it
-            $Env:TLSPC_tokenURL = $TLSPC_tokenURL
-            Log-Message "DEBUG`tretrieved TLSPC_TOKENURL_ = $TLSPC_tokenURL"
-        }
-
-        # Set $TLSPC_OAuthIdpURL as an environment variable for the current process only - OPTIONAL
-        if ( [Environment]::GetEnvironmentVariable("TLSPC_OAUTHIDPURL_$playBook", "Machine")) {
-            $TLSPC_OAuthIdpURL = [System.Environment]::GetEnvironmentVariable("TLSPC_OAUTHIDPURL_$playBook",'Machine')
-            Log-Message "DEBUG`tretrieved TLSPC_OAUTHIDPURL_ = $TLSPC_OAuthIdpURL"
-        }
-
-        # Set $TLSPC_CLIENTSECRET as an environment variable for the current process only - OPTIONAL
-        if (-not [string]::IsNullOrEmpty([Environment]::GetEnvironmentVariable("TLSPC_CLIENTSECRET", "User")) -and -not [string]::IsNullOrEmpty([Environment]::GetEnvironmentVariable("TLSPC_CLIENTSECRET", "Process"))) {
-            if ([Environment]::GetEnvironmentVariable("TLSPC_CLIENTSECRET_$playBook", "Machine")) {
-                Log-Message("DEBUG`tretieving clientsecret")
-                try {
-                    Add-Type -AssemblyName System.Security
-                    $encryptedBase64 = ([Environment]::GetEnvironmentVariable("TLSPC_CLIENTSECRET_$playBook", "Machine"))
-                    Log-Message ("encryptedBase64 = $encryptedBase64")
-                    $SecureStr = [System.Convert]::FromBase64String($encryptedBase64) 
-                    Log-Message ("SecureStr = $SecureStr")
-                    $bytes = [Security.Cryptography.ProtectedData]::Unprotect($SecureStr, $null, [Security.Cryptography.DataProtectionScope]::LocalMachine)
-                    Log-Message ("bytes = $bytes")
-                    $TLSPC_ClientSecret = [System.Text.Encoding]::Unicode.GetString($bytes) 
-                    # Do not log client secret, Log-Message ("TLSPC_ClientSecret_decoded = $TLSPC_ClientSecret")
-                    Log-Message "DEBUG`tretrieved TLSPC_CLIENTSECRET."  
-                }
-                catch {
-                    Log-Message "ERROR`t An ERROR`t occurred retrieving TLSPC_CLIENTSECRET: $($_.Exception.Message)"
-                }
-            }
-        }
-
-        if (-not $TLSPC_ClientSecret -and -not $TLSPC_APIKEY) {
-            Log-Message "CRITICAL`tno TLSPC_CLIENTSECRET nor API KEY, exiting."
-            exit
-        }
-
-        # Create the JSON payload
-        $jsonPayload = @{
-            client_id     = $TLSPC_CLIENTID
-            client_secret = $TLSPC_ClientSecret
-            audience      = "https://api.venafi.cloud/"
-            grant_type    = "client_credentials"
-        } | ConvertTo-Json
-        
-        try {
-            $response = Invoke-RestMethod -Method Post -Uri $TLSPC_OAuthIdpURL -ContentType "application/json" -Body $jsonPayload
-            $env:TLSPC_ExternalJWT = $response.access_token
-            Log-Message("DEBUG`tTLSPC_ExternalJWT retrieved.")
-        }
-        catch {
-            Log-Message("ERROR`t could not obtain external JWT: $_")
-        }
-
-
-        #####################################################################################################################
-        #####################################   it's not recommneded using API Keys... ######################################
-        #####################################   this only exists for older clients..   ######################################
-        #####################################################################################################################
-
-        if ([Environment]::GetEnvironmentVariable("TLSPC_APIKEY", "User")) { Log-Message "WARN`tAPIKEY found in user world." }
-        if ([Environment]::GetEnvironmentVariable("TLSPC_APIKEY", "Proces")){ Log-Message "WARN`tAPIKEY found in process world." }
-        if (-not [string]::IsNullOrEmpty([Environment]::GetEnvironmentVariable("TLSPC_APIKEY", "User")) -and -not [string]::IsNullOrEmpty([Environment]::GetEnvironmentVariable("TLSPC_APIKEY", "Process"))) {
-            if ([Environment]::GetEnvironmentVariable("TLSPC_APIKEY_$playBook", "Machine")) {
-                try {
-                    Add-Type -AssemblyName System.Security
-                    $encryptedBase64 = ([Environment]::GetEnvironmentVariable("TLSPC_APIKEY_$playBook", "Machine"))
-                    $SecureStr = [System.Convert]::FromBase64String($encryptedBase64) 
-                    $bytes = [Security.Cryptography.ProtectedData]::Unprotect($SecureStr, $null, [Security.Cryptography.DataProtectionScope]::LocalMachine)
-                    $Env:TLSPC_APIKEY = [System.Text.Encoding]::Unicode.GetString($bytes) 
-                    Log-Message "WARN`tretrieved TLSPC_APIKEY, IT's NOT RECOMMENDED TO USE API KEYS, USE SERVICE ACCOUNTS INSTEAD!"  
-                }
-                catch {
-                    Log-Message "ERROR`t an ERROR`t occurred retrieving TLSPC_APIKEY: $($_.Exception.Message)"
-                }  
-            }
-        }
-    }
-
-    default {
-        Log-Message "CRITICAL`tUnsupported platform: $platform"
-        exit
-    }
+if ("$TLSPC_tokenURL") {
+    [Environment]::SetEnvironmentVariable("TLSPC_TOKENURL_$playBook",$TLSPC_tokenURL, "Machine")
+    Write-Log "Sucessfully set TLSPC_TOKENURL_$playBook" 
 }
 
-
-# define vcert.zip donload release information
-$apiUrl = "https://api.github.com/repos/Venafi/vcert/releases/latest"
-Log-Message "DEBUG`tFetching the latest release from $apiUrl"
-
-# Use Invoke-RestMethod to call the GitHub API - OPTIONAL, YOU MIGHT HOST VCERT ELSEWHER
-try {
-    $latestRelease = Invoke-RestMethod -Uri $apiUrl
-    Log-Message "DEBUG`tLatest release information retrieved."
-} catch {
-    Log-Message "ERROR`t Failed to retrieve the latest release information from $apiUrl. ERROR`t: $_"
+if ("$TLSPC_OAuthIdpURL") {
+    [Environment]::SetEnvironmentVariable("TLSPC_OAUTHIDPURL_$playBook",$TLSPC_OAuthIdpURL, "Machine")
+    Write-Log "Sucessfully set TLSPC_OAuthIdpURL_$playBook" 
 }
 
-# Attempt to find the Windows ZIP asset - OPTIONAL, YOU MIGHT HOST VCERT ELSEWHERE
-try {
-    $windowsZipAsset = $latestRelease.assets | Where-Object { $_.name -match "windows.*\.zip$" } | Select-Object -First 1  
-    if ($null -eq $windowsZipAsset) {
-        Log-Message "ERROR`t Windows ZIP file not found in the latest release."
-        exit
-    } else {
-        Log-Message "DEBUG`tWindows ZIP file found in the latest release."
-    }
-} catch {
-    Log-Message "ERROR`t Failed to find the Windows ZIP asset. ERROR`t: $_"
+if ("$TLSPC_ClientSecret") {
+    Add-Type -AssemblyName System.Security
+    $bytes = [System.Text.Encoding]::Unicode.GetBytes($TLSPC_ClientSecret)
+    $SecureStr = [Security.Cryptography.ProtectedData]::Protect($bytes, $null, [Security.Cryptography.DataProtectionScope]::LocalMachine)
+    $SecureStrBase64 = [System.Convert]::ToBase64String($SecureStr)
+    [Environment]::SetEnvironmentVariable("TLSPC_CLIENTSECRET_$playBook",$SecureStrBase64, "Machine") 
+    Write-Log "TLSPC_CLIENTSECRET_$playBook set."     
+} else {
+    Write-Log "TLSPC_CLIENTSECRET determined during runtime." 
 }
 
-# Extract the download URL - OPTIONAL, YOU MIGHT HOST VCERT ELSEWHERE
-try {
-    $windowsZipUrl = $windowsZipAsset.browser_download_url
-    Log-Message "DEBUG`tvcert ZIP download URL: $windowsZipUrl"
-} catch {
-    Log-Message "ERROR`t Failed to extract the vcert ZIP download URL. ERROR`t: $_"
+if ("$TLSPC_APIKEY") {
+    Write-Log "It is not recommended using API keys, use ServiceAccounts and oAuth instead."    
+    Add-Type -AssemblyName System.Security
+    $bytes = [System.Text.Encoding]::Unicode.GetBytes($TLSPC_APIKEY)
+    $SecureStr = [Security.Cryptography.ProtectedData]::Protect($bytes, $null, [Security.Cryptography.DataProtectionScope]::LocalMachine)
+    $SecureStrBase64 = [System.Convert]::ToBase64String($SecureStr)
+    [Environment]::SetEnvironmentVariable("TLSPC_APIKEY_$playBook",$SecureStrBase64, "Machine")  
 }
 
-# Define the path for the downloaded ZIP file - OPTIONAL, YOU MIGHT HOST VCERT ELSEWHERE
-try {
-    $zipFilePath = Join-Path -Path $tempPath -ChildPath "vcert_latest_windows.zip"
-    Log-Message "DEBUG`tZIP file path defined as: $zipFilePath"
-} catch {
-    # Log the ERROR`t message if defining the path fails
-    Log-Message "ERROR`t Failed to define the ZIP file path. ERROR`t: $_"
+if ("$TLSPC_SyslogServer") {
+    [Environment]::SetEnvironmentVariable("TLSPC_SyslogServer_$playBook",$TLSPC_SyslogServer, "Machine")
+    Write-Log "Sucessfully set TLSPC_SyslogServer_$playBook" 
 }
 
-# Download the ZIP file - OPTIONAL, YOU MIGHT HOST VCERT ELSEWHERE
-try {
-    Invoke-WebRequest -Uri $windowsZipUrl -OutFile $zipFilePath
-    Log-Message "DEBUG`tZIP file downloaded to $zipFilePath"
-} catch {
-    # Log the ERROR`t message if the download fails
-    Log-Message "ERROR`t Failed to download the ZIP file from $windowsZipUrl. ERROR`t: $_"
+if ("$TLSPC_SyslogPort") {
+    [Environment]::SetEnvironmentVariable("$TLSPC_SyslogPort_$playBook",$TLSPC_SyslogPort, "Machine")
+    Write-Log "Sucessfully set $TLSPC_SyslogPort_$playBook" 
 }
 
-# Extract the ZIP file directly to the temp directory, without subfolders - OPTIONAL, YOU MIGHT HOST VCERT ELSEWHERE
-try {
-    Expand-Archive -LiteralPath $zipFilePath -DestinationPath $tempPath -Force
-    Log-Message "DEBUG`tvcert extracted to $tempPath"
-} catch {
-    # Log the ERROR`t message if the extraction fails
-    Log-Message "ERROR`t Failed to extract the ZIP file to $tempPath. ERROR`t: $_"
-}
-try {
-    # Prepare the vcert execution - REQUIRED
-    $vcertExePath = Join-Path -Path $tempPath -ChildPath "vcert.exe"
-    Log-Message "DEBUG`tvcert executable path set to: $vcertExePath"
-    Log-Message "DEBUG`t==== Vcert ===="
-} catch {
-    # Log the ERROR`t message if there is an issue preparing the vcert execution path
-    Log-Message "ERROR`t Failed to prepare the vcert executable path. ERROR`t: $_"
-}
+# Generate a random hour and minute for the task to run
+$randomHour = Get-Random -Minimum 8 -Maximum 10
 
-# Write the version to the log file - RECOMMENDED
-$command = "$vcertExePath" + ' -version'  + ' 2>&1 | %{ "$_" }'
-Log-Message "INFO`t$command"   
-try { 
-    $versionOutput = Invoke-Expression $command
-} catch {
-    Log-Message "ERROR`t Failed to execute the vcert version command. ERROR`t: $_"
-}
-$versionOutput | ForEach-Object { Log-Message "INFO`t$_" }
+# Generate a random hour and minute for the task to run
+$randomMinute = Get-Random -Minimum 0 -Maximum 59
 
-
-# $command = '& ' + "$vcertExePath" + ' run -d -f ' + "$playBookPath" + ' 2>&1 | %{ "$_" } | Tee-Object -FilePath ' + "$logFilePathR" + ' -Append'   
-$command = "$vcertExePath" + ' run -force-renew -f ' + "$playBookPath" + ' 2>&1 | %{ "$_" }'
-Log-Message "INFO`t$command"
-
-try {
-    $output = Invoke-Expression $command
-}
-catch {
-    Log-Message("CRITICAL`toccurred while executing vcert: $_")
-}
-$output | ForEach-Object { Log-Message $_ }
-
-
-# Revoke Grant for TPP - HIGHLY RECOMMENDED
-if ($platform -eq "tlsdc" -or $platform -eq "tpp") {
-    $token = $response_grant.access_token
-    $headers = @{
-        Authorization = "Bearer $token"
-    }
-    $response_revoke = Invoke-WebRequest -Uri "$TPPUrl/vedauth/Revoke/token" -Method 'GET' -Headers $headers -UseBasicParsing
-
-    if ($response_revoke.StatusCode -eq 200) {
-        Log-Message "DEBUG`tStatus Description: $($response_revoke.StatusDescription)"                
-    } else {
-        Log-Message "ERROR`t Request failed."
-        Log-Message "ERROR`t Status Code: $($response_revoke.StatusCode)"
-        Log-Message "ERROR`t Status Description: $($response_revoke.StatusDescription)"
-        #Log-Message "ERROR`t Headers: $($response_revoke.Headers | ConvertTo-Json -Depth 10)"
-        #Log-Message "ERROR`t Content: $($response_revoke.Content)"
-    } 
-}
-
+# Create the trigger for daily execution at the randomized time
+$trigger = New-ScheduledTaskTrigger -Daily -At (Get-Date -Hour $randomHour -Minute $randomMinute -Second 0)
  
+# change this for production from Bypass to 'AllSigned' and sign your vcert-task.ps1 with an internal trusted certificate, this will increase security 
+$action = New-ScheduledTaskAction -Execute "PowerShell.exe" -Argument "-ExecutionPolicy RemoteSigned -Command `"& { `$playbook_url = '$TLSPC_PlaybookUrl'; `$scriptBlock = [scriptblock]::Create((New-Object System.Net.WebClient).DownloadString('$scriptUrl')); & `$scriptBlock -playbook_url `$playbook_url` }`""
+
+# Set the task to run as the SYSTEM account
+$principal = New-ScheduledTaskPrincipal -UserId "SYSTEM" -LogonType ServiceAccount
+ 
+# Register the scheduled task with a specified name
+$taskName = "vcert - $playBook"
+Register-ScheduledTask -TaskName $taskName -Action $action -Trigger $trigger -Principal $principal -Description "runs the vcert playbook, checks certificates(s) and performs renewal when necessary"
+Write-Log "Created task succesfully: vcert - $playBook" 

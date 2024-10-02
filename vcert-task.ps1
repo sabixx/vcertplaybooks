@@ -119,8 +119,6 @@ function Send-SyslogMessageTCP {
     }
 }
 
-Write-Log ("INFO Hello World")
-
 # Function to append log messages with timestamps - RECOMMENDED
 function Write-Log {
     param (
