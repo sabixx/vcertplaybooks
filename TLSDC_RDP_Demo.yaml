@@ -16,7 +16,7 @@ certificateTasks:
       location:
         instance: '{{ Env "TLSPC_Hostname" }}.tlsp.demo'
         tlsAddress:  '{{ Env "TLSPC_Hostname" }}.tlsp.demo:3389'
-        zone: 'Installations\Agentless\SLC\Demo Operational\RDP'
+        zone: 'Installations\Agentless\SLC\Demo Operational\Pull\RDP'
         replace: true      
     installations:
       - format: CAPI
