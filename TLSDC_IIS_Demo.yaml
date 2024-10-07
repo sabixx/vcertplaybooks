@@ -13,14 +13,14 @@ certificateTasks:
       csr: local
       keySize: 3072
       subject:
-        commonName: '{{ Hostname | ToLower -}}.tlsp.demo'
+        commonName: '{{ Env "TLSPC_Hostname" }}.tlsp.demo'
         country: GB
         locality: London
         state: London
         organization: Venafi
         orgUnits: [IIS]
       sanDNS: 
-        - '{{ Hostname | ToLower -}}.tlsp.demo'
+        - '{{ Env "TLSPC_Hostname" }}.tlsp.demo'
       zone: 'Certificates\IIS\Pull'
     installations:
       - format: CAPI
