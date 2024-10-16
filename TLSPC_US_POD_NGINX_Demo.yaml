@@ -26,7 +26,7 @@ certificateTasks:
         file: "/etc/nginx/ssl/nginx_30744.crt"
         chainFile: "/etc/nginx/ssl/nginx_30744.crt"
         keyFile: "/etc/nginx/ssl/nginx_30744.key"
-        afterInstallAction: "echo Success!!!"
+        afterInstallAction: "sudo nginx -s reload"
 
 
         
