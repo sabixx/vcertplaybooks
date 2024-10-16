@@ -6,7 +6,7 @@ config:
       tokenURL: '{{ Env "TokenURL" }}' # https://api.venafi.cloud/v1/oauth2/v2.0/0ce51ed1-da6f-11ec-a787-89187550eb51/token'
 certificateTasks:
   - name: IIS # Task Identifier, can be used with 
-    renewBefore: 20%
+    renewBefore: 30d
     setEnvVars: ["thumbprint"]
     request:
       csr: local
