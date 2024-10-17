@@ -1,11 +1,10 @@
 config:
   connection:
-    platform: tlspc #platform
+    platform: vaas #cloudplatform
     credentials:
-      externalJWT: '{{ Env "ExternalJWT" }}'
-      tokenURL: '{{ Env "TokenURL" }}' # https://api.venafi.cloud/v1/oauth2/v2.0/0ce51ed1-da6f-11ec-a787-89187550eb51/token'
+      apiKey: '{{ Env "TLSPC_APIKEY" }}'
 certificateTasks:
-  - name: IIS # Task Identifier, can be used with 
+  - name: nginx # Task Identifier, can be used with 
     renewBefore: 30d
     setEnvVars: ["thumbprint"]
     request:
