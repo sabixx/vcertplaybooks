@@ -10,7 +10,7 @@ certificateTasks:
     request:
       csr: local
       subject:
-        commonName: 'mynginx30744.tlsp.demo'
+        commonName: 'vcertnginx30744.tlsp.demo'
         country: GB
         locality: London
         state: London
@@ -18,7 +18,7 @@ certificateTasks:
         orgUnits:
           - vcert
       sanDNS: 
-        - 'mynginx30744.tlsp.demo'
+        - 'vcertnginx30744.tlsp.demo'
       zone: 'vcert\ztAllowAll'
     installations:
       - format: PEM
