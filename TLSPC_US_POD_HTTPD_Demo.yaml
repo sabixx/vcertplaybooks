@@ -26,5 +26,5 @@ certificateTasks:
         file: "/etc/apache2/ssl/apache_31044.crt"
         chainFile: "/etc/apache2/ssl/apache_31044.chain"
         keyFile: "/etc/apache2/ssl/apache_31044.key"
-        afterInstallAction: "cat /etc/apache2/ssl/apache_31044.chain >> /etc/apache2/ssl/apache_31044.crt && sudo httpd -s reload"
+        afterInstallAction: "cat /etc/apache2/ssl/apache_31044.chain >> /etc/apache2/ssl/apache_31044.crt && sudo service apache2 reload"
 
