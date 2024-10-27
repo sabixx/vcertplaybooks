@@ -1,0 +1,30 @@
+config:
+  connection:
+    platform: vaas #cloudplatform
+    credentials:
+      apiKey: '{{ Env "TLSPC_APIKEY" }}'
+certificateTasks:
+  - name: tomcat # Task Identifier, can be used with 
+    renewBefore: 30d
+    setEnvVars: ["thumbprint"]
+    request:
+      csr: local
+      keySize: 3072
+      subject:
+        commonName: 'vcerttomcat32044.tlsp.demo'
+        country: GB
+        locality: London
+        state: London
+        organization: Venafi
+        orgUnits:
+          - vcert
+      sanDNS: 
+        - 'vcerttomcat32044.tlsp.demo'
+      zone: 'vcert\ztAllowAll'
+    installations:
+      - format: JKS
+        jksAlias: "vcerttomcat32044"
+        jksPassword: '{{ Env "keystorePass" }}'
+        keyFile: "/usr/share/tomcat/ssl/tomcat_32044.jks"
+        afterInstallAction: "systemctl restart tomcat"
+
