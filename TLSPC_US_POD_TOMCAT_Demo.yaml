@@ -23,7 +23,7 @@ certificateTasks:
       zone: 'vcert\ztAllowAll'
     installations:
       - format: JKS
-        file: '/usr/share/tomcat/ssl/tomcat_32044jks'
+        file: '/usr/share/tomcat/ssl/tomcat_32044.jks'
         jksAlias: vcerttomcat32044
         jksPassword: '{{ Env "KEYSTORE_PASS" }}'
         afterInstallAction: "systemctl restart tomcat"
