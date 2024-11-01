@@ -11,7 +11,7 @@ certificateTasks:
       csr: local
       keySize: 3072
       subject:
-        commonName: 'vcertnginx30744.tlsp.demo'
+        commonName: 'vcert-nginx-jsab.tlsp.demo'
         country: GB
         locality: London
         state: London
@@ -19,12 +19,12 @@ certificateTasks:
         orgUnits:
           - vcert
       sanDNS: 
-        - 'vcertnginx30744.tlsp.demo'
+        - 'vcert-nginx-jsab.tlsp.demo'
       zone: 'vcert\ztAllowAll'
     installations:
       - format: PEM
-        file: "/etc/nginx/ssl/nginx_30744.crt"
-        chainFile: "/etc/nginx/ssl/nginx_30744.chain"
-        keyFile: "/etc/nginx/ssl/nginx_30744.key"
-        afterInstallAction: "cat /etc/nginx/ssl/nginx_30744.chain >> /etc/nginx/ssl/nginx_30744.crt && sudo nginx -s reload"
+        file: "/etc/nginx/ssl/nginx_443.crt"
+        chainFile: "/etc/nginx/ssl/nginx_443.chain"
+        keyFile: "/etc/nginx/ssl/nginx_443.key"
+        afterInstallAction: "cat /etc/nginx/ssl/nginx_443.chain >> /etc/nginx/ssl/nginx_443.crt && sudo nginx -s reload"
 
