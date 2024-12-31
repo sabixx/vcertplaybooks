@@ -11,7 +11,7 @@ certificateTasks:
       csr: local
       keySize: 3072
       subject:
-        commonName: 'vcert-nginx-jsab.tlsp.demo'
+        commonName: '{{Env "DOMAINS"}}'
         country: GB
         locality: London
         state: London
@@ -19,7 +19,7 @@ certificateTasks:
         orgUnits:
           - vcert
       sanDNS: 
-        - 'vcert-nginx-jsab.tlsp.demo'
+        - '{{Env "DOMAINS"}}'
       zone: 'vcert\ztAllowAll'
     installations:
       - format: PEM

@@ -11,7 +11,7 @@ certificateTasks:
       csr: local
       keySize: 3072
       subject:
-        commonName: '{{Env "DOMAINS"}}}.tlsp.demo'
+        commonName: '{{Env "DOMAINS"}}'
         country: GB
         locality: London
         state: London
@@ -19,7 +19,7 @@ certificateTasks:
         orgUnits:
           - vcert
       sanDNS: 
-        - '{{Env "DOMAINS"}}}.tlsp.demo'
+        - '{{Env "DOMAINS"}}'
       zone: 'vcert\ztAllowAll'
     installations:
       - format: PEM

@@ -11,7 +11,7 @@ certificateTasks:
       csr: local
       keySize: 3072
       subject:
-        commonName: 'vcerttomcat32044.tlsp.demo'
+        commonName: '{{Env "DOMAINS"}}'
         country: GB
         locality: London
         state: London
@@ -19,12 +19,12 @@ certificateTasks:
         orgUnits:
           - vcert
       sanDNS: 
-        - 'vcerttomcat32044.tlsp.demo'
+        - '{{Env "DOMAINS"}}'
       zone: 'vcert\ztAllowAll'
     installations:
       - format: JKS
-        file: '/usr/share/tomcat/ssl/tomcat_32044.jks'
-        jksAlias: vcerttomcat32044
+        file: '/usr/share/tomcat/ssl/tomcat_443.jks'
+        jksAlias: vcerttomcat443
         jksPassword: '{{ Env "KEYSTORE_PASS" }}'
         afterInstallAction: "systemctl restart tomcat"
         backupFiles: true

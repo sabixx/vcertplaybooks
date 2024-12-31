@@ -11,7 +11,7 @@ certificateTasks:
       csr: local
       keySize: 3072
       subject:
-        commonName: 'vcerthaproxy32144.tlsp.demo'
+        commonName: '{{Env "DOMAINS"}}'
         country: GB
         locality: London
         state: London
@@ -19,11 +19,11 @@ certificateTasks:
         orgUnits:
           - vcert
       sanDNS: 
-        - 'vcerthaproxy32144.tlsp.demo'
+        - '{{Env "DOMAINS"}}'
       zone: 'vcert\ztAllowAll'
     installations:
       - format: PEM
-        file: "/etc/haproxy/certs/haproxy_32144.pem"
-        chainFile: "/etc/haproxy/certs/haproxy_32144.chain"
-        keyFile: "/etc/haproxy/certs/haproxy_32144.key"
-        afterInstallAction: "cat /etc/haproxy/certs/haproxy_32144.chain >> /etc/haproxy/certs/haproxy_32144.pem && cat /etc/haproxy/certs/haproxy_32144.key >> /etc/haproxy/certs/haproxy_32144.pem && sudo systemctl restart haproxy"
+        file: "/etc/haproxy/certs/haproxy_443.pem"
+        chainFile: "/etc/haproxy/certs/haproxy_443.chain"
+        keyFile: "/etc/haproxy/certs/haproxy_443.key"
+        afterInstallAction: "cat /etc/haproxy/certs/haproxy_443.chain >> /etc/haproxy/certs/haproxy_443.pem && cat /etc/haproxy/certs/haproxy_443.key >> /etc/haproxy/certs/haproxy_443.pem && systemctl restart haproxy"
