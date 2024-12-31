@@ -24,7 +24,7 @@ certificateTasks:
     installations:
       - format: JKS
         file: '/usr/share/tomcat/ssl/tomcat_443.jks'
-        jksAlias: vcerttomcat443
+        jksAlias: tomcat443
         jksPassword: '{{ Env "KEYSTOREPASS" }}'
         afterInstallAction: "systemctl restart tomcat"
         backupFiles: true
