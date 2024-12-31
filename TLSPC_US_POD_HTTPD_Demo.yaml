@@ -23,8 +23,8 @@ certificateTasks:
       zone: 'vcert\ztAllowAll'
     installations:
       - format: PEM
-        file: "/etc/apache2/ssl/apache_31044.crt"
-        chainFile: "/etc/apache2/ssl/apache_31044.chain"
-        keyFile: "/etc/apache2/ssl/apache_31044.key"
-        afterInstallAction: "cat /etc/apache2/ssl/apache_31044.chain >> /etc/apache2/ssl/apache_31044.crt && sudo service apache2 reload"
+        file: "/etc/apache2/ssl/apache_443.crt"
+        chainFile: "/etc/apache2/ssl/apache_443.chain"
+        keyFile: "/etc/apache2/ssl/apache_443.key"
+        afterInstallAction: "cat /etc/apache2/ssl/apache_443.chain >> /etc/apache2/ssl/apache_443.crt && sudo service apache2 reload"
 
