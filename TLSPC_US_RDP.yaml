@@ -11,7 +11,7 @@ certificateTasks:
       csr: local
       validDays: 31d
       subject:
-        commonName: '{{ Env "TLSCP_Hostname" }}.venafidemo.com'
+        commonName: '{{ Env "TLSPC_Hostname" }}.venafidemo.com'
         country: GB
         locality: London
         state: London
@@ -19,7 +19,7 @@ certificateTasks:
         orgUnits:
           - vcert
       sanDNS: 
-        - '{{ Env "TLSCP_Hostname"}}.venafidemo.com'
+        - '{{ Env "TLSPC_Hostname"}}.venafidemo.com'
         - '{{ Hostname | ToLower -}}.venafidemo.com'
       zone: "vcert prod\\rdp"
     installations:
