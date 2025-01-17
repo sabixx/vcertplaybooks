@@ -281,12 +281,13 @@ switch ($platform) {
             Write-Log "DEBUG`tretrieved TLSPC_OAUTHIDPURL_ = $TLSPC_OAuthIdpURL"
         }
 
-        Write-Log "DEBUG`tUser scoped TLSPC_CLIENTSECRET_$playBook: $([Environment]::GetEnvironmentVariable('TLSPC_CLIENTSECRET_$playBook', 'User'))"
-        Write-Log "DEBUG`tProcess scoped TLSPC_CLIENTSECRET_$playBook: $([Environment]::GetEnvironmentVariable('TLSPC_CLIENTSECRET_$playBook', 'Process'))"
-        Write-Log "DEBUG`tMachine scoped TLSPC_CLIENTSECRET_$playBook: $([Environment]::GetEnvironmentVariable('TLSPC_CLIENTSECRET_$playBook', 'Machine'))"
-
-        # Set $TLSPC_CLIENTSECRET as an environment variable for the current process only - OPTIONAL
-        if (-not [string]::IsNullOrEmpty([Environment]::GetEnvironmentVariable("TLSPC_CLIENTSECRET", "User")) -and -not [string]::IsNullOrEmpty([Environment]::GetEnvironmentVariable("TLSPC_CLIENTSECRET", "Process"))) {
+        # Set $TLSPC_CLIENTSECRET as an environment variable for the current process - OPTIONAL
+        # Check User and Process scopes explicitly
+        $UserSecret = [Environment]::GetEnvironmentVariable("TLSPC_CLIENTSECRET", "User")
+        $ProcessSecret = [Environment]::GetEnvironmentVariable("TLSPC_CLIENTSECRET", "Process")
+        if ([string]::IsNullOrEmpty($UserSecret) -and [string]::IsNullOrEmpty($ProcessSecret)) {
+            Write-Log "DEBUG`tTLSPC_CLIENTSECRET not found in User or Process scope. Checking Machine scope..."    
+            
             if ([Environment]::GetEnvironmentVariable("TLSPC_CLIENTSECRET_$playBook", "Machine")) {
                 Write-Log("DEBUG`tretieving clientsecret")
                 try {
