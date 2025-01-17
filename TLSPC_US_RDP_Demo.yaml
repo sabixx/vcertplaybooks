@@ -12,7 +12,7 @@ certificateTasks:
       csr: local
       validDays: 31d
       subject:
-        commonName: '{{ Env "TLSPC_Hostname" }}.venafidemo.com'
+        commonName: '{{ Env "TLSPC_Hostname" }}.tlsp.demo'
         country: GB
         locality: London
         state: London
@@ -20,9 +20,9 @@ certificateTasks:
         orgUnits:
           - vcert
       sanDNS: 
-        - '{{ Env "TLSPC_Hostname"}}.venafidemo.com'
-        - '{{ Hostname | ToLower -}}.venafidemo.com'
-      zone: "vcert prod\\rdp"
+        - '{{ Env "TLSPC_Hostname"}}.tlsp.demo'
+        - '{{ Hostname | ToLower -}}.tlsp.demo'
+      zone: "vcert\\ztAllowAll"
     installations:
       - format: CAPI
         capiLocation: 'LocalMachine\MY'
