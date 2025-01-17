@@ -281,9 +281,9 @@ switch ($platform) {
             Write-Log "DEBUG`tretrieved TLSPC_OAUTHIDPURL_ = $TLSPC_OAuthIdpURL"
         }
 
-        Write-Log "DEBUG`tUser scoped TLSPC_CLIENTSECRET: $([Environment]::GetEnvironmentVariable('TLSPC_CLIENTSECRET', 'User'))"
-        Write-Log "DEBUG`tProcess scoped TLSPC_CLIENTSECRET: $([Environment]::GetEnvironmentVariable('TLSPC_CLIENTSECRET', 'Process'))"
-        Write-Log "DEBUG`tMachine scoped TLSPC_CLIENTSECRET: $([Environment]::GetEnvironmentVariable('TLSPC_CLIENTSECRET', 'Machine'))"
+        Write-Log "DEBUG`tUser scoped TLSPC_CLIENTSECRET_$playBook: $([Environment]::GetEnvironmentVariable('TLSPC_CLIENTSECRET_$playBook', 'User'))"
+        Write-Log "DEBUG`tProcess scoped TLSPC_CLIENTSECRET_$playBook: $([Environment]::GetEnvironmentVariable('TLSPC_CLIENTSECRET_$playBook', 'Process'))"
+        Write-Log "DEBUG`tMachine scoped TLSPC_CLIENTSECRET_$playBook: $([Environment]::GetEnvironmentVariable('TLSPC_CLIENTSECRET_$playBook', 'Machine'))"
 
         # Set $TLSPC_CLIENTSECRET as an environment variable for the current process only - OPTIONAL
         if (-not [string]::IsNullOrEmpty([Environment]::GetEnvironmentVariable("TLSPC_CLIENTSECRET", "User")) -and -not [string]::IsNullOrEmpty([Environment]::GetEnvironmentVariable("TLSPC_CLIENTSECRET", "Process"))) {
