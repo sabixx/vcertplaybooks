@@ -26,5 +26,5 @@ certificateTasks:
         file: "/etc/apache2/ssl/apache_443.crt"
         chainFile: "/etc/apache2/ssl/apache_443.chain"
         keyFile: "/etc/apache2/ssl/apache_443.key"
-        afterInstallAction: "cat /etc/apache2/ssl/apache_443.chain >> /etc/apache2/ssl/apache_443.crt && systemctl apache2 restart"
+        afterInstallAction: "cat /etc/apache2/ssl/apache_443.chain >> /etc/apache2/ssl/apache_443.crt && nohup systemctl apache2 restart"
 
