@@ -23,7 +23,7 @@ certificateTasks:
       zone: 'Workshop Labs\Workshops-ztPKUS'
     installations:
       - format: PEM
-        file: "/etc/ssl/certs/db_web.crt"
-        chainFile: "/etc/ssl/certs/db_web.crt.chain"
-        keyFile: "/etc/ssl/private/db_web.key"
-        afterInstallAction: "cat /etc/ssl/certs/db_web.crt.chain >> /etc/ssl/certs/db_web.crt"
+        file: "/etc/ssl/certs/web.crt"
+        chainFile: "/etc/ssl/certs/web.crt.chain"
+        keyFile: "/etc/ssl/private/web.key"
+        afterInstallAction: "cat /etc/ssl/certs/web.crt.chain >> /etc/ssl/certs/web.crt"

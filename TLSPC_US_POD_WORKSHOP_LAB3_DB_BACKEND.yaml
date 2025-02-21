@@ -23,7 +23,7 @@ certificateTasks:
       zone: 'Workshop Labs\Workshop expiring certs'
     installations:
       - format: PEM
-        file: "/etc/ssl/certs/db_expired.crt"
-        chainFile: "/etc/ssl/certs/db_expired.crt"
-        keyFile: "/etc/ssl/private/db_expired.key"
+        file: "/etc/ssl/certs/db.crt"
+        chainFile: "/etc/ssl/certs/db.crt"
+        keyFile: "/etc/ssl/private/db.key"
         #afterInstallAction: ""
