@@ -11,7 +11,7 @@ certificateTasks:
       csr: local
       keySize: 3072
       subject:
-        commonName: '{{Env "DOMAINS"}}'
+        commonName: '{{Env "WEBDOMAIN"}}'
         country: GB
         locality: London
         state: London
@@ -19,11 +19,11 @@ certificateTasks:
         orgUnits:
           - vcert
       sanDNS: 
-        - '{{Env "DOMAINS"}}'
-      zone: 'vcert\ztAllowAll'
+        - '{{Env "WEBDOMAIN"}}'
+      zone: 'Workshop Labs\Workshops-ztPKUS'
     installations:
       - format: PEM
-        file: "/etc/haproxy/certs/haproxy_443.pem"
-        chainFile: "/etc/haproxy/certs/haproxy_443.chain"
-        keyFile: "/etc/haproxy/certs/haproxy_443.key"
-        afterInstallAction: "cat /etc/haproxy/certs/haproxy_443.chain >> /etc/haproxy/certs/haproxy_443.pem && cat /etc/haproxy/certs/haproxy_443.key >> /etc/haproxy/certs/haproxy_443.pem && systemctl restart haproxy"
+        file: "/etc/ssl/certs/db_web.crt"
+        chainFile: "/etc/ssl/certs/db_web.crt.chain"
+        keyFile: "/etc/ssl/private/db_web.key"
+        afterInstallAction: "cat /etc/ssl/certs/db_web.crt.chain >> /etc/ssl/certs/db_web.crt"
