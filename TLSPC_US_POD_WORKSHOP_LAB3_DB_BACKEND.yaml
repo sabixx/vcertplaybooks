@@ -24,6 +24,6 @@ certificateTasks:
     installations:
       - format: PEM
         file: "/etc/ssl/certs/db.crt"
-        chainFile: "/etc/ssl/certs/db.crt"
+        chainFile: "/etc/ssl/certs/dbchain.crt"
         keyFile: "/etc/ssl/private/db.key"
         #afterInstallAction: ""
