@@ -11,7 +11,7 @@ certificateTasks:
       csr: local
       keySize: 3072
       subject:
-        commonName: '{{Env "DBDOMAIN"}}'
+        commonName: '{{Env "PUBLICDOMAIN"}}'
         country: GB
         locality: London
         state: London
@@ -19,11 +19,11 @@ certificateTasks:
         orgUnits:
           - vcert
       sanDNS: 
-        - '{{Env "DBDOMAIN"}}'
-      zone: 'Workshop Labs\Workshop expiring certs'
+        - '{{Env "PUBLICDOMAIN"}}'
+      zone: 'Workshop Labs\Workshop Public'
     installations:
       - format: PEM
-        file: "/etc/ssl/certs/db.crt"
-        chainFile: "/etc/ssl/certs/dbchain.crt"
-        keyFile: "/etc/ssl/private/db.key"
-        #afterInstallAction: ""
+        file: "/etc/ssl/certs/web.crt"
+        chainFile: "/etc/ssl/certs/web.crt.chain"
+        keyFile: "/etc/ssl/private/web.key"
+        afterInstallAction: "cat /etc/ssl/certs/web.crt.chain >> /etc/ssl/certs/web.crt"
