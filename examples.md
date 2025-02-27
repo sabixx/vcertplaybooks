@@ -76,7 +76,7 @@ $TLSPC_SyslogPort = 514;
 
 # run once examples:
 
-## TLS PC
+## TLS PC US
 
 ```
 $TLSPC_OAuthIdpURL = "https://dev-opv4np2n306var5k.us.auth0.com/oauth/token"
@@ -92,6 +92,14 @@ $TLSPC_hostname = 'vcert_website';
 ## TLS DC with Windows Integrated Auth
 ```
 & { $playbook_url = 'https://raw.githubusercontent.com/sabixx/vcertplaybooks/main/TLSDC_US_IIS_No_Install.yaml'; $scriptBlock = [scriptblock]::Create((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/sabixx/vcertplaybooks/main/vcert-task.ps1')); & $scriptBlock -playbook_url $playbook_url -TLSPC_SyslogServer 'k8cluster.tlsp.demo' -TLSPC_SyslogPort '514' }
+```
+
+
+## TLSPC enable WINRM
+
+``` 
+$Env:TLSPC_APIKEY = 'xxxx'
+& { $playbook_url = 'https://raw.githubusercontent.com/sabixx/vcertplaybooks/main/TLSPC_ENABLE_WINRM_HTTPS_Demo.yaml'; $scriptBlock = [scriptblock]::Create((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/sabixx/vcertplaybooks/main/vcert-task.ps1')); & $scriptBlock -playbook_url $playbook_url 
 ```
 
 # Deprecated via API key
