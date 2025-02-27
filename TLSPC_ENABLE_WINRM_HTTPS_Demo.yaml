@@ -21,7 +21,8 @@ certificateTasks:
         capiFriendlyName: 'vCert Playbook - TLSPC_WINRM_Demo' 
         capiIsNonExportable: True      
         afterInstallAction: $path=(Get-WmiObject -Class "Win32_TSGeneralSetting" -Namespace root\cimv2\terminalservices -Filter "TerminalName='WINRM-tcp'").__path; Set-WmiInstance -Path $path -Argument @{SSLCertificateSHA1Hash="$Env:VCERT_WINRM_THUMBPRINT"}; New-Item -Path WSMan:\Localhost\Listener\ -Transport HTTPS -Address * -CertificateThumbprint "$Env:VCERT_WINRM_THUMBPRINT" -Force
+config:
   connection:
-    platform: vAaS #cloudplatform
+    platform: vaas #cloudplatform
     credentials:
       apiKey: '{{ Env "TLSPC_APIKEY" }}'
