@@ -6,15 +6,15 @@ certificateTasks:
       csr: local
       keySize: 3072
       subject:
-        commonName: '{{ Env "TLSPC_Hostname" }}.mimdemo.io'
+        commonName: '{{ Env "TLSPC_Hostname" }}'
         country: GB
         locality: London
         state: London
         organization: Venafi
         orgUnits: [WINRM]
-      zone: 'IIS pull\ztAllowAll' 
+      zone: 'WinRM\ztAllowAll' 
       sanDNS: 
-        - '{{ Hostname | ToLower -}}.mimdemo.io'  
+        - '{{ Env "TLSPC_Hostname" }}'
     installations:
       - format: CAPI
         capiLocation: 'LocalMachine\MY'

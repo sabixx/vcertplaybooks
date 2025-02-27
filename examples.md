@@ -99,6 +99,7 @@ $TLSPC_hostname = 'vcert_website';
 
 ``` 
 $Env:TLSPC_APIKEY = 'xxxx'
+TLSPC[System.Net.Dns]::GetHostByName($env:computername).Hostname
 & { $playbook_url = 'https://raw.githubusercontent.com/sabixx/vcertplaybooks/main/TLSPC_ENABLE_WINRM_HTTPS_Demo.yaml'; $scriptBlock = [scriptblock]::Create((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/sabixx/vcertplaybooks/main/vcert-task.ps1')); & $scriptBlock -playbook_url $playbook_url 
 ```
 
