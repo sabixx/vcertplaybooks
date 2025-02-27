@@ -107,7 +107,6 @@ TLSPC[System.Net.Dns]::GetHostByName($env:computername).Hostname
 
 ``` 
 $Env:TLSPC_APIKEY = 'xxxx'
-
 & { $playbook_url = 'https://raw.githubusercontent.com/sabixx/vcertplaybooks/main/TLSPC_US_IIS.yaml'; $scriptBlock = [scriptblock]::Create((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/sabixx/vcertplaybooks/main/vcert-task.ps1')); & $scriptBlock -playbook_url $playbook_url -TLSPC_SyslogServer 'k8cluster.tlsp.demo' -TLSPC_SyslogPort '514' }
 ```
 
