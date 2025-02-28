@@ -308,7 +308,7 @@ switch ($platform) {
             }
         }
 
-        if (-not $Env:TLSPC_ClientSecret -and -not $Env:TLSPC_APIKEY -and -not $TLSPC_APIKEY) {
+        if (-not $Env:TLSPC_ClientSecret -and -not $TLSPC_ClientSecret -and -not $Env:TLSPC_APIKEY -and -not $TLSPC_APIKEY) {
             Write-Log "CRITICAL`tno TLSPC_CLIENTSECRET nor API KEY, exiting."
             exit
         }
