@@ -20,7 +20,7 @@ certificateTasks:
           - vcert
       sanDNS: 
         - '{{Env "PUBLICDOMAIN"}}'
-      zone: 'Workshop Labs\Workshops-ztPKUS' #for testing, once doe use 'Workshop Labs\Workshop Public' for production
+      zone: 'Workshop Labs\Workshop Public' #public or testing cert determined in control plane
     installations:
       - format: PEM
         file: 'c:\ssl\certs\web.crt'
