@@ -22,5 +22,5 @@ certificateTasks:
     installations:
       - format: PEM
         file: "/config/ssl/cert.pem"
-        chainFile: "/config/ssl/cert.key"
-        keyFile: "/config/ssl/chain.pem"
+        chainFile: "/config/ssl/chain.pem"
+        keyFile: "/config/ssl/cert.key"
