@@ -18,10 +18,9 @@ certificateTasks:
         organization: Venafi, Inc.
       sanDNS: 
         - '{{Env "PUBLICDOMAIN"}}'
-      zone: 'Workshop Labs\Workshop Public' #public or internal controled in the control plane 
+      zone: 'Workshop Labs\Workshops-ztPKUS'
     installations:
       - format: PEM
-        file: "/etc/ssl/certs/web.crt"
-        chainFile: "/etc/ssl/certs/web.crt.chain"
-        keyFile: "/etc/ssl/private/web.key"
-        afterInstallAction: "cat /etc/ssl/certs/web.crt.chain >> /etc/ssl/certs/web.crt"
+        file: "/config/ssl/cert.pem"
+        chainFile: "/config/ssl/cert.key"
+        keyFile: "/config/ssl/chain.pem"
