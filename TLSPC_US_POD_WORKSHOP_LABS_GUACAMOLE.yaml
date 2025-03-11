@@ -4,7 +4,7 @@ config:
     credentials:
       apiKey: '{{ Env "TLSPC_APIKEY" }}'
 certificateTasks:
-  - name: haproxy # Task Identifier, can be used with 
+  - name: guacamole # Task Identifier, can be used with 
     renewBefore: 30d
     setEnvVars: ["thumbprint"]
     request:
