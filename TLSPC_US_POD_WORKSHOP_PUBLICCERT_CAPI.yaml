@@ -12,12 +12,10 @@ certificateTasks:
       keySize: 3072
       subject:
         commonName: '{{Env "PUBLICDOMAIN"}}'
-        country: GB
-        locality: London
-        state: London
-        organization: Venafi
-        orgUnits:
-          - vcert
+        country: US
+        locality: Salt Lake City
+        state: Utah
+        organization: Venafi, Inc.
       sanDNS: 
         - '{{Env "PUBLICDOMAIN"}}'
       zone: 'Workshop Labs\Workshop Public' #public or testing cert determined in control plane
