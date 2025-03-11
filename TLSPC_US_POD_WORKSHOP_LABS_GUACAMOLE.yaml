@@ -18,7 +18,7 @@ certificateTasks:
         organization: Venafi, Inc.
       sanDNS: 
         - '{{Env "PUBLICDOMAIN"}}'
-      zone: 'Workshop Labs\Workshops-ztPKUS'
+      zone: 'Workshop Labs\Workshop Public'
     installations:
       - format: PEM
         file: "/config/ssl/cert.pem"
