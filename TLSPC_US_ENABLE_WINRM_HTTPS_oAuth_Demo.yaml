@@ -12,14 +12,14 @@ certificateTasks:
       csr: local
       keySize: 3072
       subject:
-        commonName: '{{ Env "TLSPC_Hostname" }}'
+        commonName: '{{ Env "TLSPC_Hostname" }}.tlsp.demo'
         country: GB
         locality: London
         state: London
         organization: Venafi
         orgUnits: [WINRM]
       sanDNS: 
-        - '{{ Env "TLSPC_Hostname" }}'
+        - '{{ Env "TLSPC_Hostname" }}.tlsp.demo'
       zone: 'WinRM\ztAllowAll' 
     installations:
       - format: CAPI
