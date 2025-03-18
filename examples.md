@@ -43,7 +43,7 @@ $TLSPC_SyslogServer = "k8cluster.tlsp.demo"
 $TLSPC_SyslogPort = 514; 
 
 & {
-    $TLSPC_hostname = 'SERVERNAME'; #not set, using the hostname, playbook is adding domain mimlab.io
+    $TLSPC_hostname = 'SERVERNAME'; #not set, using the hostname, playbook is adding domain: mimlab.io
     $TLSPC_PlaybookUrl = 'https://raw.githubusercontent.com/sabixx/vcertplaybooks/main/TLSPC_US_RDP_mimlab.io.yaml';
     $scriptBlock = [scriptblock]::Create((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/sabixx/vcertplaybooks/main/setup_vcert.ps1'));
     & $scriptBlock -TLSPC_hostname $TLSPC_hostname -TLSPC_PlaybookUrl $TLSPC_PlaybookUrl -TLSPC_OAuthIdpURL $TLSPC_OAuthIdpURL -TLSPC_tokenURL $TLSPC_tokenURL -TLSPC_ClientID $TLSPC_ClientID -TLSPC_ClientSecret $TLSPC_ClientSecret -TLSPC_SyslogServer $TLSPC_SyslogServer -TLSPC_SyslogPort $TLSPC_SyslogPort
@@ -82,7 +82,7 @@ $TLSPC_SyslogServer = "k8cluster.tlsp.demo"
 $TLSPC_SyslogPort = 514; 
 
 & {
-    # $TLSPC_hostname = ''; #not set, using the hostname
+    # $TLSPC_hostname = ''; #not set, using the hostname, playbook is adding domain: tlsp.demo
     $TLSPC_PlaybookUrl = 'https://raw.githubusercontent.com/sabixx/vcertplaybooks/main/TLSPC_US_ENABLE_WINRM_HTTPS_oAuth_Demo.yaml';
     $scriptBlock = [scriptblock]::Create((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/sabixx/vcertplaybooks/main/setup_vcert.ps1'));
     & $scriptBlock -TLSPC_hostname $TLSPC_hostname -TLSPC_PlaybookUrl $TLSPC_PlaybookUrl -TLSPC_OAuthIdpURL $TLSPC_OAuthIdpURL -TLSPC_tokenURL $TLSPC_tokenURL -TLSPC_ClientID $TLSPC_ClientID -TLSPC_ClientSecret $TLSPC_ClientSecret -TLSPC_SyslogServer $TLSPC_SyslogServer -TLSPC_SyslogPort $TLSPC_SyslogPort
