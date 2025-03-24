@@ -24,4 +24,4 @@ certificateTasks:
         file: "/opt/keycloak/conf/server.crt.pem"
         chainFile: "/opt/keycloak/conf/server.crt.chain"
         keyFile: "/opt/keycloak/conf/server.key.pem"
-        afterInstallAction: "cat /opt/keycloak/conf/server.crt.chain >> /opt/keycloak/conf/server.crt.pem"
+        afterInstallAction: "chmod 644 /opt/keycloak/conf/* && cat /opt/keycloak/conf/server.crt.chain >> /opt/keycloak/conf/server.crt.pem"
