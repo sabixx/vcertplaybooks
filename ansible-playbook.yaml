@@ -1,0 +1,18 @@
+- name: Extract and display certificate information
+  hosts: localhost
+  gather_facts: false
+  tasks:
+    - name: Decode base64-encoded certificate
+      ansible.builtin.copy:
+        dest: "/tmp/temp_cert.pem"
+        content: "{{ certificate | b64decode }}"
+      register: cert_file
+
+    - name: Retrieve certificate information
+      community.crypto.x509_certificate_info:
+        path: "/tmp/temp_cert.pem"
+      register: cert_info
+
+    - name: Display certificate information
+      ansible.builtin.debug:
+        var: cert_info
