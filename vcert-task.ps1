@@ -58,6 +58,8 @@ function Get-SyslogSeverity {
     return $severityValue
 }
 
+# TODO: make syslog messages compatible with RFC5424
+
 # Function to send the captured output to Graylog over UDP
 function Send-SyslogMessageUDP {
     param (
