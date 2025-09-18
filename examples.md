@@ -13,7 +13,7 @@ In order to setup a taks the follwoing command can be execute:
 
 # Create a scheduled Taks:
 
-# ServiceAccount and exteranl JWT authentication
+# ServiceAccount and external JWT authentication
 ```
 $TLSPC_OAuthIdpURL = "https://dev-opv4np2n306var5k.us.auth0.com/oauth/token"
 $TLSPC_tokenURL = "https://api.venafi.cloud/v1/oauth2/v2.0/8152c781-d872-11ec-a937-d73bd47a18d5/token"
