@@ -20,7 +20,7 @@ certificateTasks:
           - vcert
       sanDNS: 
         - '{{Env "DOMAINS"}}'
-      zone: 'vcert\ztAllowAll'
+      zone: 'vcert\public'
     installations:
       - format: PEM
         file: "/etc/ssl/certs/apache_443.crt"
