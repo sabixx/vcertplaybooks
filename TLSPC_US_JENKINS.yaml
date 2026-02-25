@@ -4,7 +4,7 @@ config:
     credentials:
       apiKey: '{{ Env "TLSPC_APIKEY" }}'
 certificateTasks:
-  - name: RDP # Task Identifier, no relevance in tool run
+  - name: Jenkins # Task Identifier
     renewBefore: 30d # 20%
     setEnvVars: ["thumbprint"]
     request:
