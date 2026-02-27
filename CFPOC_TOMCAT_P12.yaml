@@ -23,7 +23,7 @@ certificateTasks:
       zone: 'Tomcat\public_le'
     installations:
       - format: PKCS12
-        file: '/etc/ssl/private/tomcat_443.p12'
+        file: '/etc/ssl/private/tomcat_8443.p12'
         p12Password: '{{ Env "KEYSTOREPASS" }}'
         afterInstallAction: "systemctl restart tomcat"
 
