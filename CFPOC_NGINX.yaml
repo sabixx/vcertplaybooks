@@ -20,7 +20,7 @@ certificateTasks:
           - vcert
       sanDNS: 
         - '{{Env "DOMAINS"}}'
-      zone: 'vcert\public'
+      zone: 'Nginx\public_le'
     installations:
       - format: PEM
         file: "/etc/ssl/certs/nginx_443.crt"

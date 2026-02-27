@@ -20,7 +20,7 @@ certificateTasks:
           - vcert
       sanDNS: 
         - '{{Env "DOMAINS"}}'
-      zone: 'vcert\public'
+      zone: 'Tomcat\public_le'
     installations:
       - format: PKCS12
         file: '/etc/ssl/private/tomcat_443.p12'
