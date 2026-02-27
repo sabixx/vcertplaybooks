@@ -26,3 +26,4 @@ certificateTasks:
         file: '/etc/ssl/private/tomcat_443.p12'
         p12Password: '{{ Env "KEYSTOREPASS" }}'
         afterInstallAction: "systemctl restart tomcat"
+

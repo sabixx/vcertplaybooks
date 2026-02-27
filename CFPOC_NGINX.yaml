@@ -24,6 +24,7 @@ certificateTasks:
     installations:
       - format: PEM
         file: "/etc/ssl/certs/nginx_443.crt"
-        chainFile: "/etc/ssl/certs/nginx_443.chain.crt" 
+        chainFile: "/etc/ssl/certs/nginx_443.chain.crt"
         keyFile: "/etc/ssl/private/nginx_443.key"
         afterInstallAction: "cat /etc/ssl/certs/nginx_443.chain.crt >> /etc/ssl/certs/nginx_443.crt && systemctl reload nginx"
+        

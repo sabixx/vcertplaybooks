@@ -28,3 +28,4 @@ certificateTasks:
         jksPassword: '{{ Env "KEYSTOREPASS" }}'
         afterInstallAction: "systemctl restart tomcat"
         backupFiles: true
+        

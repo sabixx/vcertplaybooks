@@ -26,4 +26,5 @@ certificateTasks:
         file: "/etc/ssl/private/haproxy_443.pem"
         chainFile: "/etc/ssl/private/haproxy_443.chain"
         keyFile: "/etc/ssl/private/haproxy_443.key"
-        afterInstallAction: "cat /etc/ssl/private/haproxy_443.chain >> /etc/ssl/private/haproxy_443.pem && cat /etc/ssl/private/haproxy_443.key >>/etc/ssl/private/haproxy_443.pem && systemctl restart haproxy"
+        afterInstallAction: "cat /etc/ssl/private/haproxy_443.chain >> /etc/ssl/private/haproxy_443.pem && cat /etc/ssl/private/haproxy_443.key >> /etc/ssl/private/haproxy_443.pem && systemctl restart haproxy"
+        

@@ -23,7 +23,8 @@ certificateTasks:
       zone: 'Apache\public_le'
     installations:
       - format: PEM
-        file: "/etc/ssl/certs/apache_443.crt"
-        chainFile: "/etc/ssl/certs/apache_443.chain.crt"
-        keyFile: "/etc/ssl/private/apache_443.key"
+        file: "/etc/ssl/certs/apache_443.crt"                                                                                                                                                                  
+        chainFile: "/etc/ssl/certs/apache_443.chain.crt"                                                                                                                                                       
+        keyFile: "/etc/ssl/private/apache_443.key"                                                                                                                                                           
         afterInstallAction: "systemctl restart apache2"
+        
