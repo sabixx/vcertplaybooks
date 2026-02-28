@@ -23,8 +23,8 @@ certificateTasks:
       zone: 'Tomcat\public_le'
     installations:
       - format: JKS
-        file: '/etc/ssl/private/tomcat_443.jks'
-        jksAlias: tomcat443
+        file: '/etc/ssl/private/tomcat_8443.jks'
+        jksAlias: tomca8443
         jksPassword: '{{ Env "KEYSTOREPASS" }}'
         afterInstallAction: "systemctl restart tomcat"
         backupFiles: true
