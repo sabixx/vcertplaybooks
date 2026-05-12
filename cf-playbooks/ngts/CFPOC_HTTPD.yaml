@@ -1,0 +1,30 @@
+config:
+  connection:
+    platform: tlspc
+    credentials:
+      externalJWT: '{{ Env "TLSPC_ExternalJWT" }}'
+      tokenURL: '{{ Env "TLSPC_tokenURL" }}'
+certificateTasks:
+  - name: httpd
+    renewBefore: 30d
+    setEnvVars: ["thumbprint"]
+    request:
+      csr: local
+      keySize: 3072
+      subject:
+        commonName: '{{Env "DOMAINS"}}'
+        country: GB
+        locality: London
+        state: London
+        organization: Venafi
+        orgUnits:
+          - vcert
+      sanDNS:
+        - '{{Env "DOMAINS"}}'
+      zone: '{{ Env "VCERT_ZONE_APACHE" }}'
+    installations:
+      - format: PEM
+        file: "/etc/ssl/certs/apache_443.crt"
+        chainFile: "/etc/ssl/certs/apache_443.chain.crt"
+        keyFile: "/etc/ssl/private/apache_443.key"
+        afterInstallAction: "systemctl restart apache2"
