@@ -20,7 +20,7 @@ certificateTasks:
           - vcert
       sanDNS:
         - '{{Env "DOMAINS"}}'
-      zone: 'HAProxy\public_le'
+      zone: 'HAProxy\LE - 90 Days'
     installations:
       - format: PEM
         file: "/etc/ssl/private/haproxy_443.pem"
