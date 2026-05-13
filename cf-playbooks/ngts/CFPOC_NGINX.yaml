@@ -21,7 +21,7 @@ certificateTasks:
           - vcert
       sanDNS:
         - '{{Env "DOMAINS"}}'
-      zone: '{{ Env "VCERT_ZONE_NGINX" }}'
+      zone: 'LE - 90 Days'
     installations:
       - format: PEM
         file: "/etc/ssl/certs/nginx_443.crt"

@@ -21,7 +21,7 @@ certificateTasks:
           - vcert
       sanDNS:
         - '{{Env "DOMAINS"}}'
-      zone: '{{ Env "VCERT_ZONE_TOMCAT" }}'
+      zone: 'LE - 90 Days'
     installations:
       - format: JKS
         file: '/etc/ssl/private/tomcat_443.jks'
