@@ -1,9 +1,12 @@
 config:
   connection:
-    platform: tlspc
+    platform: NGTS
+    url: '{{ Env "NGTS_URL" }}' # NGTS URL as environment variable
     credentials:
-      externalJWT: '{{ Env "TLSPC_ExternalJWT" }}'
-      tokenURL: '{{ Env "TLSPC_tokenURL" }}'
+      clientId: '{{ Env "NGTS_CLIENT_ID" }}' # NGTS client ID as environment variable
+      clientSecret: '{{ Env "NGTS_CLIENT_SECRET" }}' # NGTS client secret as environment variable
+      scope: '{{ Env "NGTS_SCOPE" }}' # NGTS scope as environment variable
+      tokenURL: '{{ Env "NGTS_TOKEN_URL" }}' # NGTS token URL as environment variable
 certificateTasks:
   - name: nginx
     renewBefore: 30d
