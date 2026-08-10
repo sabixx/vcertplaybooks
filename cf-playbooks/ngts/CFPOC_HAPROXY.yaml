@@ -1,6 +1,5 @@
 config:
   connection:
-  connection:
     platform: NGTS
     url: '{{ Env "NGTS_URL" }}' # NGTS URL as environment variable
     credentials:
