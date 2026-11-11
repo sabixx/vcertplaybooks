@@ -1,0 +1,36 @@
+config:
+  connection:
+    platform: NGTS
+    url: '{{ Env "NGTS_URL" }}' # NGTS URL as environment variable
+    credentials:
+      clientId: '{{ Env "NGTS_CLIENT_ID" }}' # NGTS client ID as environment variable
+      clientSecret: '{{ Env "NGTS_CLIENT_SECRET" }}' # NGTS client secret as environment variable
+      scope: '{{ Env "NGTS_SCOPE" }}' # NGTS scope as environment variable
+      tokenURL: '{{ Env "NGTS_TOKEN_URL" }}' # NGTS token URL as environment variable
+certificateTasks:
+  - name: exchange # thumbprint exposed as $Env:VCERT_EXCHANGE_THUMBPRINT
+    renewBefore: 30d
+    setEnvVars: ["thumbprint"]
+    request:
+      csr: local
+      keySize: 3072
+      subject:
+        commonName: '{{Env "DOMAINS"}}' # Exchange server FQDN as environment variable
+        country: GB
+        locality: London
+        state: London
+        organization: Venafi
+        orgUnits:
+          - vcert
+      sanDNS:
+        - '{{Env "DOMAINS"}}'
+        - 'mail.{{Env "MAIL_DOMAIN"}}' # base mail domain as environment variable, e.g. example.com
+        - 'autodiscover.{{Env "MAIL_DOMAIN"}}'
+      zone: 'LE - 90 Days'
+    installations:
+      - format: CAPI
+        capiLocation: 'LocalMachine\MY'
+        capiFriendlyName: 'vCert Playbook - CFPOC_EXCHANGE'
+        capiIsNonExportable: True
+        # Bind cert to Exchange IIS, SMTP, IMAP and POP, set IMAP/POP certificate name, restart IMAP/POP services
+        afterInstallAction: Add-PSSnapin Microsoft.Exchange.Management.PowerShell.SnapIn -ErrorAction SilentlyContinue; Enable-ExchangeCertificate -Thumbprint "$Env:VCERT_EXCHANGE_THUMBPRINT" -Services IIS,SMTP,IMAP,POP -Force; Set-ImapSettings -X509CertificateName "$Env:DOMAINS"; Set-PopSettings -X509CertificateName "$Env:DOMAINS"; Restart-Service MSExchangeIMAP4,MSExchangeIMAP4BE,MSExchangePOP3,MSExchangePOP3BE -ErrorAction SilentlyContinue
